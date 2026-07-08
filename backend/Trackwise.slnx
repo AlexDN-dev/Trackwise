@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Trackwise.API/Trackwise.API.csproj" />
+    <Project Path="src/Trackwise.Application/Trackwise.Application.csproj" />
+    <Project Path="src/Trackwise.Domain/Trackwise.Domain.csproj" />
+    <Project Path="src/Trackwise.Infrastructure/Trackwise.Infrastructure.csproj" />
+  </Folder>
+</Solution>
