@@ -1,5 +1,6 @@
 using Scalar.AspNetCore;
 using Serilog;
+using Trackwise.Infrastructure;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
 
@@ -15,6 +16,8 @@ try
     builder.Services.AddControllers();
     builder.Services.AddAuthorization();
     builder.Services.AddOpenApi();
+
+    builder.Services.addInfrastructure(builder.Configuration);
 
     var app = builder.Build();
 
