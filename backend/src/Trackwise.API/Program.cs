@@ -1,6 +1,7 @@
 using Scalar.AspNetCore;
 using Serilog;
 using Trackwise.Infrastructure;
+using Trackwise.Application;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
 
@@ -17,7 +18,8 @@ try
     builder.Services.AddAuthorization();
     builder.Services.AddOpenApi();
 
-    builder.Services.addInfrastructure(builder.Configuration);
+    builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddApplication();
 
     var app = builder.Build();
 
@@ -26,8 +28,11 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.MapOpenApi();
-        app.UseHsts();
         app.MapScalarApiReference();
+    }
+    else
+    {
+        app.UseHsts();
     }
     
     app.UseHttpsRedirection();

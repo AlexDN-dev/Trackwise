@@ -1,13 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Trackwise.Application.Candidatures;
+using Trackwise.Application.Common.Interfaces;
 using Trackwise.Infrastructure.Persistence;
+using Trackwise.Infrastructure.Repositories;
 
 namespace Trackwise.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection addInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection")
                                ?? throw new InvalidOperationException(
@@ -15,6 +18,9 @@ public static class DependencyInjection
 
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(connectionString));
+
+        services.AddScoped<ICandidatureRepository, CandidatureRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
 
