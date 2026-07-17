@@ -41,8 +41,9 @@ public class TokenService : ITokenService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string GenerateRefreshToken()
-        => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+    public (string Token, DateTimeOffset ExpiresAt) GenerateRefreshToken()
+        => (Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            DateTimeOffset.UtcNow.AddDays(_settings.RefreshTokenDays));
 
     public string HashRefreshToken(string refreshToken)
         => Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken)));
