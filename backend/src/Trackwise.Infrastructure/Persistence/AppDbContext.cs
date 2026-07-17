@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<Candidature> Candidatures => Set<Candidature>();
     public DbSet<Entreprise> Entreprises => Set<Entreprise>();
     public DbSet<Competence> Competences => Set<Competence>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

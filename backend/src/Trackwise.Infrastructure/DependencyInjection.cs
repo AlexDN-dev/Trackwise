@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Trackwise.Application.Candidatures;
 using Trackwise.Application.Common.Interfaces;
+using Trackwise.Infrastructure.Authentication;
 using Trackwise.Infrastructure.Persistence;
 using Trackwise.Infrastructure.Repositories;
 
@@ -21,6 +22,9 @@ public static class DependencyInjection
 
         services.AddScoped<ICandidatureRepository, CandidatureRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));        services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
+        services.AddSingleton<ITokenService, TokenService>();
 
         return services;
 

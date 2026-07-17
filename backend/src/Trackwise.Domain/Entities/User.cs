@@ -13,4 +13,5 @@ public class User : BaseEntity
     public PlanType PlanType { get; set; } = PlanType.Free;
 
     public ICollection<Candidature> Candidatures { get; set; } = new List<Candidature>();
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

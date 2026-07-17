@@ -1,5 +1,6 @@
 using Scalar.AspNetCore;
 using Serilog;
+using Trackwise.API.Extensions;
 using Trackwise.Infrastructure;
 using Trackwise.Application;
 
@@ -17,6 +18,7 @@ try
     builder.Services.AddControllers();
     builder.Services.AddAuthorization();
     builder.Services.AddOpenApi();
+    builder.Services.AddJwtAuthentication(builder.Configuration);
 
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddApplication();
@@ -36,6 +38,7 @@ try
     }
     
     app.UseHttpsRedirection();
+    app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
 
