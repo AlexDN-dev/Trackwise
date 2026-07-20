@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Trackwise.Application.Auth;
 using Trackwise.Application.Candidatures;
 using Trackwise.Application.Common.Interfaces;
+using Trackwise.Application.Entreprises;
 using Trackwise.Infrastructure.Authentication;
 using Trackwise.Infrastructure.Persistence;
 using Trackwise.Infrastructure.Repositories;
@@ -28,6 +29,8 @@ public static class DependencyInjection
         services.AddSingleton<ITokenService, TokenService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
+        services.AddScoped<IEntrepriseRepository, EntrepriseRepository>();
 
         return services;
 

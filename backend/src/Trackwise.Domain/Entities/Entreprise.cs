@@ -5,6 +5,7 @@ namespace Trackwise.Domain.Entities;
 public class Entreprise : BaseEntity
 {
     public required string Name { get; set; }
+    public string? NormalizedName { get; set; }
     public string? City { get; set; }
     public string? Sector { get; set; }
     public string? Website { get; set; }

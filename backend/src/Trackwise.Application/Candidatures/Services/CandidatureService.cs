@@ -2,6 +2,7 @@ using Trackwise.Application.Candidatures.Dtos;
 using Trackwise.Application.Common.Interfaces;
 using Trackwise.Domain.Entities;
 using Trackwise.Domain.Enums;
+using Trackwise.Application.Entreprises;
 
 namespace Trackwise.Application.Candidatures.Services;
 
@@ -9,11 +10,13 @@ public class CandidatureService : ICandidatureService
 {
     private readonly ICandidatureRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEntrepriseRepository _entrepriseRepository;
 
-    public CandidatureService(ICandidatureRepository repository, IUnitOfWork unitOfWork)
+    public CandidatureService(ICandidatureRepository repository, IUnitOfWork unitOfWork, IEntrepriseRepository entrepriseRepository)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
+        _entrepriseRepository = entrepriseRepository;
     }
 
     public async Task<List<CandidatureResponse>> GetAllAsync(Guid userId, CancellationToken cancellationToken = default)
@@ -31,6 +34,8 @@ public class CandidatureService : ICandidatureService
 
     public async Task<CandidatureResponse> CreateAsync(Guid userId, CreateCandidatureRequest request, CancellationToken cancellationToken = default)
     {
+        var entrepriseId = await ResolveEntrepriseAsync(request, cancellationToken);
+
         var candidature = new Candidature
         {
             Title = request.Title,
@@ -39,15 +44,31 @@ public class CandidatureService : ICandidatureService
             Description = request.Description,
             ContractType = request.ContractType,
             PostulationDate = request.PostulationDate,
-            EntrepriseId = request.EntrepriseId,
+            EntrepriseId = entrepriseId,
             UserId = userId,
             Status = CandidatureStatus.ToSend
         };
-        
+
         _repository.Add(candidature);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return ToResponse(candidature);
+    }
+    private async Task<Guid> ResolveEntrepriseAsync(CreateCandidatureRequest request, CancellationToken cancellationToken)
+    {
+        if (request.EntrepriseId is Guid pickedId)
+            return pickedId;            
+
+        var name = request.EntrepriseName!.Trim();       
+        var normalized = name.ToLowerInvariant();
+
+        var existing = await _entrepriseRepository.GetByNormalizedNameAsync(normalized, cancellationToken);
+        if (existing is not null)
+            return existing.Id;                          
+
+        var entreprise = new Entreprise { Name = name, NormalizedName = normalized };
+        _entrepriseRepository.Add(entreprise);          
+        return entreprise.Id;                             
     }
 
     public async Task<CandidatureResponse?> UpdateAsync(Guid id, Guid userId, UpdateCandidatureRequest request, CancellationToken cancellationToken = default)
@@ -79,6 +100,8 @@ public class CandidatureService : ICandidatureService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return true;
     }
+    
+    
     
     private static CandidatureResponse ToResponse(Candidature c) => new()
     {

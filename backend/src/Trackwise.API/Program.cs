@@ -23,9 +23,15 @@ try
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddApplication();
 
+    builder.Services.AddOpenApi(options =>
+    {
+        options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    });
+
     var app = builder.Build();
 
     app.UseSerilogRequestLogging();
+    app.MapScalarApiReference(options => options.AddPreferredSecuritySchemes("Bearer"));
 
     if (app.Environment.IsDevelopment())
     {

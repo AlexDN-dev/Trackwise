@@ -12,5 +12,10 @@ public class EntrepriseConfiguration : IEntityTypeConfiguration<Entreprise>
         builder.Property(e => e.City).HasMaxLength(100);
         builder.Property(e => e.Sector).HasMaxLength(100);
         builder.Property(e => e.Website).HasMaxLength(256);
+        builder.Property(e => e.NormalizedName).HasMaxLength(150);
+        
+        builder.HasIndex(e => e.NormalizedName)
+            .IsUnique()
+            .HasFilter("[NormalizedName] IS NOT NULL");
     }
 }
