@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Trackwise.Application.Auth;
 using Trackwise.Application.Auth.Dtos;
 
 namespace Trackwise.API.Controllers;
 
+[EnableRateLimiting("auth")]
 [ApiController]
 [Route("api/auth")]
 [AllowAnonymous]

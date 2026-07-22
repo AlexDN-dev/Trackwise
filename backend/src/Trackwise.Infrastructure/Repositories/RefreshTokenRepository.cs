@@ -19,4 +19,9 @@ public class RefreshTokenRepository : IRefreshTokenRepository
 
     public void Add(RefreshToken refreshToken)
         => _context.RefreshTokens.Add(refreshToken);
+
+    public Task<List<RefreshToken>> GetActiveByUserAsync(Guid userId, CancellationToken cancellationToken = default)
+        => _context.RefreshTokens
+            .Where(t => t.UserId == userId && t.RevokedAt == null && t.ExpiresAt > DateTimeOffset.UtcNow)
+            .ToListAsync(cancellationToken);
 }

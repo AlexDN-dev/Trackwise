@@ -80,7 +80,7 @@ public class AuthService : IAuthService
     {
         var hashed = _tokenService.HashRefreshToken(request.RefreshToken);
         var stored = await _refreshTokenRepository.GetByHashedTokenAsync(hashed, cancellationToken);
-
+        
         if (stored is null)
         {
             _logger.LogWarning("Refresh refuse : token inconnu");
@@ -89,8 +89,13 @@ public class AuthService : IAuthService
 
         if (stored.RevokedAt is not null)
         {
-            _logger.LogWarning(
-                "Refresh refuse : token deja revoque pour {UserId}, reutilisation possible", stored.UserId);
+            var actifs = await _refreshTokenRepository.GetActiveByUserAsync(stored.UserId, cancellationToken);
+            foreach (var t in actifs)
+                t.RevokedAt = DateTimeOffset.UtcNow;
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+            _logger.LogWarning("Réutilisation d'un refresh token revoque pour {UserId} : toute la chaine active revoquée", stored.UserId);
             return null;
         }
 

@@ -1,8 +1,13 @@
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Scalar.AspNetCore;
 using Serilog;
 using Trackwise.API.Extensions;
+using Trackwise.API.Middleware;
 using Trackwise.Infrastructure;
 using Trackwise.Application;
+using Trackwise.Domain.Enums;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
 
@@ -16,9 +21,20 @@ try
         .Enrich.FromLogContext());
     
     builder.Services.AddControllers();
-    builder.Services.AddAuthorization();
+    builder.Services.AddAuthorization(options =>
+    {
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+        
+        options.AddPolicy("Premium", policy =>
+            policy.RequireClaim("plan", nameof(PlanType.Premium)));
+    });
     builder.Services.AddOpenApi();
     builder.Services.AddJwtAuthentication(builder.Configuration);
+
+    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+    builder.Services.AddProblemDetails();
 
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddApplication();
@@ -28,15 +44,43 @@ try
         options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
     });
 
+    builder.Services.AddRateLimiter(options =>
+    {
+        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+        options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext
+            =>
+        {
+            var key = httpContext.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                      ?? httpContext.Connection.RemoteIpAddress?.ToString()
+                      ?? "anonymous";
+
+            return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 100,
+                Window = TimeSpan.FromSeconds(10)
+            });
+        });
+
+        options.AddPolicy("auth", httpContext =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                factory: _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 5,
+                    Window = TimeSpan.FromSeconds(30)
+                }));
+    });
+
     var app = builder.Build();
 
     app.UseSerilogRequestLogging();
-    app.MapScalarApiReference(options => options.AddPreferredSecuritySchemes("Bearer"));
+    app.UseExceptionHandler();
 
     if (app.Environment.IsDevelopment())
     {
-        app.MapOpenApi();
-        app.MapScalarApiReference();
+        app.MapOpenApi().AllowAnonymous();
+        app.MapScalarApiReference(options => options.AddPreferredSecuritySchemes("Bearer")).AllowAnonymous();
     }
     else
     {
@@ -46,6 +90,7 @@ try
     app.UseHttpsRedirection();
     app.UseAuthentication();
     app.UseAuthorization();
+    app.UseRateLimiter();
     app.MapControllers();
 
     app.Run();
