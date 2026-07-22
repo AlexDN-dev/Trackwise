@@ -485,3 +485,11 @@ $RECYCLE.BIN/
 .claude/
 CLAUDE.md
 .mcp.json
+**/mcp.json
+
+# Frontend (Angular / Node) — filet de securite (frontend/.gitignore couvre le detail)
+dist/
+.angular/
+
+# Variables d'environnement locales (secrets)
+.env
