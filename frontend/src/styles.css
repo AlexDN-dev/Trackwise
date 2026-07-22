@@ -1,1 +1,41 @@
-/* You can add global styles to this file, and also import other style files */
+@import "@fontsource/plus-jakarta-sans/400.css";
+@import "@fontsource/plus-jakarta-sans/500.css";
+@import "@fontsource/plus-jakarta-sans/600.css";
+@import "@fontsource/plus-jakarta-sans/700.css";
+@import "primeicons/primeicons.css";
+
+:root {
+  --accent: #5b53e8;
+  --accent-d: #4840c4;
+  --accent-soft: #efedfd;
+  color-scheme: light;
+
+  --ink: #1b1c22;
+  --ink-2: #6a6e7b;
+  --ink-3: #a2a7b4;
+
+  --bg: #f4f5f8;
+  --card: #ffffff;
+
+  --status-to-send: #5b53e8;    /* à postuler */
+  --status-sent: #3b82f6;       /* envoyée */
+  --status-interview: #f0913a;  /* entretien */
+  --status-accepted: #12b981;   /* accepté */
+  --status-rejected: #e2557c;   /* refusé */
+
+  --radius-sm: 9px;
+  --radius: 12px;
+  --radius-lg: 20px;
+
+  --shadow-sm: 0 1px 3px rgba(28, 30, 60, .12);
+  --shadow-lg: 0 24px 60px -30px rgba(28, 30, 60, .35);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
