@@ -1,0 +1,144 @@
+button { border: none; background: none; }
+
+.auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(1100px 520px at 50% -8%, #fff 0%, #eef0f6 70%, #eceef4 100%);
+}
+.auth-wrap::before {
+  content: "";
+  position: absolute;
+  top: -160px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 640px;
+  height: 340px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 26%, transparent), transparent 68%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 426px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 34px 34px 30px;
+  box-shadow: 0 24px 60px -30px rgba(28, 30, 60, .35), 0 2px 6px rgba(28, 30, 60, .04);
+}
+
+.mk { width: 30px; height: 30px; flex: none; display: block; }
+.mk-lg { width: 44px; height: 44px; }
+.wm { font-weight: 800; font-size: 19px; letter-spacing: -.02em; color: var(--ink); }
+.wm-lg { font-size: 23px; }
+
+.auth-brand { display: flex; align-items: center; gap: 11px; justify-content: center; margin-bottom: 22px; }
+.auth-title { font-size: 22px; font-weight: 700; letter-spacing: -.02em; text-align: center; margin: 0 0 4px; }
+.auth-sub { font-size: 13.5px; color: var(--ink2); text-align: center; margin: 0 0 22px; line-height: 1.5; }
+
+.tabs {
+  display: flex;
+  background: var(--line2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 22px;
+  position: relative;
+}
+.tab {
+  flex: 1;
+  padding: 9px 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink2);
+  border-radius: 9px;
+  transition: color .18s;
+  z-index: 1;
+}
+.tab.on { color: var(--ink); }
+.tab-slider {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: calc(50% - 4px);
+  background: #fff;
+  border-radius: 9px;
+  box-shadow: 0 1px 3px rgba(28, 30, 60, .12);
+  transition: transform .26s cubic-bezier(.4, 0, .2, 1);
+}
+.tab-slider.r { transform: translateX(100%); }
+
+.frow { display: flex; gap: 11px; }
+.field { position: relative; margin-bottom: 14px; flex: 1; }
+.flabel { display: block; font-size: 12px; font-weight: 600; color: var(--ink2); margin-bottom: 6px; }
+.input {
+  width: 100%;
+  height: 44px;
+  padding: 0 40px 0 13px;
+  font-size: 14px;
+  color: var(--ink);
+  background: #fbfbfd;
+  border: 1.5px solid var(--line);
+  border-radius: 11px;
+  outline: none;
+  transition: border-color .16s, box-shadow .16s, background .16s;
+}
+.input::placeholder { color: var(--ink3); }
+.input:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.input.ok { border-color: #12b981; }
+
+.fcheck {
+  position: absolute;
+  right: 13px;
+  top: 34px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: #12b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(.6);
+  transition: .2s;
+}
+.fcheck.show { opacity: 1; transform: scale(1); }
+
+.pwmeta { display: flex; justify-content: space-between; margin-top: 7px; font-size: 11.5px; color: var(--ink3); }
+
+.auth-error { color: #dc4d6f; font-size: 12.5px; text-align: center; margin: 2px 0 4px; }
+
+.abtn {
+  width: 100%;
+  height: 46px;
+  margin-top: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14.5px;
+  font-weight: 700;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background .16s, transform .1s, box-shadow .16s;
+  box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.abtn:hover { background: var(--accent-d); }
+.abtn:active { transform: translateY(1px); }
+.abtn:disabled { background: #c9cbd6; box-shadow: none; cursor: not-allowed; }
+
+.auth-foot { text-align: center; font-size: 13px; color: var(--ink2); margin-top: 20px; }
+.link { color: var(--accent); font-weight: 600; cursor: pointer; }
+.link:hover { color: var(--accent-d); }

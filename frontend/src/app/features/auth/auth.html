@@ -1,0 +1,80 @@
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <svg class="mk mk-lg" viewBox="0 0 32 32">
+        <rect width="32" height="32" rx="9" fill="var(--accent)"></rect>
+        <path d="M9 17.2l4.4 4.4L23 10.8" stroke="#fff" stroke-width="2.9"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+      </svg>
+      <span class="wm wm-lg">Trackwise</span>
+    </div>
+
+    <h1 class="auth-title">{{ isLogin() ? 'Bon retour' : 'Créer votre compte' }}</h1>
+    <p class="auth-sub">
+      {{ isLogin()
+          ? 'Connectez-vous pour reprendre le suivi de vos candidatures.'
+          : 'Commencez à suivre vos candidatures en un seul endroit.' }}
+    </p>
+
+    <div class="tabs">
+      <div class="tab-slider" [class.r]="!isLogin()"></div>
+      <button type="button" class="tab" [class.on]="isLogin()" (click)="setMode(true)">Connexion</button>
+      <button type="button" class="tab" [class.on]="!isLogin()" (click)="setMode(false)">Inscription</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      @if (!isLogin()) {
+        <div class="frow">
+          <div class="field">
+            <label class="flabel">Prénom</label>
+            <input class="input" [class.ok]="firstnameOk()" placeholder="Marie" formControlName="firstname" />
+            <span class="fcheck" [class.show]="firstnameOk()">
+              <svg width="11" height="11" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3L9.5 3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+            </span>
+          </div>
+          <div class="field">
+            <label class="flabel">Nom</label>
+            <input class="input" [class.ok]="lastnameOk()" placeholder="Dubois" formControlName="lastname" />
+            <span class="fcheck" [class.show]="lastnameOk()">
+              <svg width="11" height="11" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3L9.5 3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+            </span>
+          </div>
+        </div>
+      }
+
+      <div class="field">
+        <label class="flabel">Adresse e-mail</label>
+        <input class="input" [class.ok]="emailOk()" type="email" placeholder="marie.dubois@email.com" formControlName="email" />
+        <span class="fcheck" [class.show]="emailOk()">
+          <svg width="11" height="11" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3L9.5 3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+        </span>
+      </div>
+
+      <div class="field">
+        <label class="flabel">Mot de passe</label>
+        <input class="input" [class.ok]="passwordOk()" type="password" placeholder="••••••••" formControlName="password" />
+        <span class="fcheck" [class.show]="passwordOk()">
+          <svg width="11" height="11" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3L9.5 3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+        </span>
+        @if (!isLogin()) {
+          <div class="pwmeta"><span>{{ passwordHint() }}</span></div>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <p class="auth-error">{{ errorMessage() }}</p>
+      }
+
+      <button class="abtn" type="submit" [disabled]="!canSubmit()">
+        {{ isLogin() ? 'Se connecter' : 'Créer mon compte' }}
+      </button>
+    </form>
+
+    <div class="auth-foot">
+      {{ isLogin() ? 'Pas encore de compte ?' : 'Vous avez déjà un compte ?' }}
+      <span class="link" (click)="setMode(!isLogin())">
+        {{ isLogin() ? 'Créer un compte' : 'Se connecter' }}
+      </span>
+    </div>
+  </div>
+</div>

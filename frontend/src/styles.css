@@ -2,40 +2,42 @@
 @import "@fontsource/plus-jakarta-sans/500.css";
 @import "@fontsource/plus-jakarta-sans/600.css";
 @import "@fontsource/plus-jakarta-sans/700.css";
+@import "@fontsource/plus-jakarta-sans/800.css";
 @import "primeicons/primeicons.css";
 
 :root {
+  color-scheme: light;
+
   --accent: #5b53e8;
   --accent-d: #4840c4;
   --accent-soft: #efedfd;
-  color-scheme: light;
 
   --ink: #1b1c22;
-  --ink-2: #6a6e7b;
-  --ink-3: #a2a7b4;
+  --ink2: #6a6e7b;
+  --ink3: #a2a7b4;
 
   --bg: #f4f5f8;
   --card: #ffffff;
+  --line: #e8eaf0;
+  --line2: #f1f3f7;
 
-  --status-to-send: #5b53e8;    /* à postuler */
-  --status-sent: #3b82f6;       /* envoyée */
-  --status-interview: #f0913a;  /* entretien */
-  --status-accepted: #12b981;   /* accepté */
-  --status-rejected: #e2557c;   /* refusé */
-
-  --radius-sm: 9px;
-  --radius: 12px;
-  --radius-lg: 20px;
-
-  --shadow-sm: 0 1px 3px rgba(28, 30, 60, .12);
-  --shadow-lg: 0 24px 60px -30px rgba(28, 30, 60, .35);
+  /* statuts kanban */
+  --status-to-send: #5b53e8;   /* à postuler */
+  --status-sent: #3b82f6;      /* envoyée */
+  --status-interview: #f0913a; /* entretien */
+  --status-accepted: #12b981;  /* réponse positive */
+  --status-rejected: #e2557c;  /* réponse négative */
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg);
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
 }
+
+button { font-family: inherit; cursor: pointer; }
+input, textarea { font-family: inherit; }
