@@ -1,0 +1,31 @@
+<div class="kc-top">
+  <div class="klogo" [class]="logoCls()">{{ initial() }}</div>
+  <div class="kc-right">
+    <div class="score sc-none">50%</div>
+    <button class="kmenu-btn" type="button" (click)="$event.stopPropagation()" title="Menu">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <circle cx="8" cy="3" r="1.4"></circle>
+        <circle cx="8" cy="8" r="1.4"></circle>
+        <circle cx="8" cy="13" r="1.4"></circle>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div class="ktitle">{{ card().title }}</div>
+<div class="kcompany">{{ card().entrepriseName }}</div>
+
+<div class="kc-foot">
+  @if (card().location) {
+    <span class="kloc">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+        <path d="M6 1.2a3.4 3.4 0 0 0-3.4 3.4c0 2.4 3.4 6 3.4 6s3.4-3.6 3.4-6A3.4 3.4 0 0 0 6 1.2z" stroke="currentColor" stroke-width="1.2"></path>
+        <circle cx="6" cy="4.6" r="1.1" stroke="currentColor" stroke-width="1.1"></circle>
+      </svg>
+      {{ card().location }}
+    </span>
+  } @else {
+    <span></span>
+  }
+  <span class="kdate">{{ date() }}</span>
+</div>

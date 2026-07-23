@@ -11,7 +11,7 @@ const REFRESH_KEY = 'trackwise_refresh';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/auth`;
-  
+
   private readonly accessToken = signal<string | null>(localStorage.getItem(ACCESS_KEY));
   readonly isAuthenticated = computed(() => this.accessToken() !== null);
 
@@ -31,6 +31,12 @@ export class AuthService {
     localStorage.removeItem(ACCESS_KEY);
     localStorage.removeItem(REFRESH_KEY);
     this.accessToken.set(null);
+  }
+
+  refresh(): Observable<AuthResponse> {
+    const refreshToken = this.getRefreshToken();
+    return this.http.post<AuthResponse>(`${this.baseUrl}/refresh`, { refreshToken })
+      .pipe(tap(res => this.storeTokens(res)));
   }
 
   getAccessToken(): string | null {

@@ -1,0 +1,106 @@
+:host {
+  display: block;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 13px 13px 11px;
+  cursor: grab;
+  transition: box-shadow .16s, transform .12s, border-color .16s;
+  box-shadow: 0 1px 2px rgba(28, 30, 60, .04);
+}
+:host(:hover) {
+  box-shadow: 0 8px 22px -12px rgba(28, 30, 60, .28);
+  border-color: #dcdfe8;
+  transform: translateY(-1px);
+}
+:host(:active) { cursor: grabbing; }
+
+.kc-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
+.kc-right { display: flex; align-items: center; gap: 5px; }
+
+.klogo {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+}
+.lg1 { background: #5b53e8; }
+.lg2 { background: #0ea5a4; }
+.lg3 { background: #f0913a; }
+.lg4 { background: #e2557c; }
+.lg5 { background: #3b82f6; }
+.lg6 { background: #8b5cf6; }
+.lg7 { background: #10a877; }
+.lg8 { background: #64748b; }
+
+.score {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: -.01em;
+}
+.sc-none { color: var(--ink2); background: var(--line2); }
+
+.kmenu-btn {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 7px;
+  color: var(--ink3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity .14s, background .14s, color .14s;
+}
+:host(:hover) .kmenu-btn { opacity: 1; }
+.kmenu-btn:hover { background: var(--line2); color: var(--ink); }
+@media (max-width: 768px) { .kmenu-btn { opacity: 1; } }
+
+.ktitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.32;
+  letter-spacing: -.01em;
+  margin-bottom: 3px;
+  text-wrap: pretty;
+}
+.kcompany {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink2);
+  margin-bottom: 11px;
+}
+.kc-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--ink3);
+  font-weight: 600;
+}
+.kloc { display: flex; align-items: center; gap: 4px; }
+
+/* --- CDK drag preview / placeholder --- */
+:host(.cdk-drag-preview) {
+  box-shadow: 0 14px 30px -14px rgba(28, 30, 60, .4);
+  transform: rotate(1.4deg) scale(1.02);
+  cursor: grabbing;
+}
+:host(.cdk-drag-placeholder) {
+  opacity: .42;
+}
