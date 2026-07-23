@@ -9,6 +9,7 @@ import {
 } from '../../core/models/candidature.models';
 import { KanbanCard } from './components/kanban-card/kanban-card';
 import { CandidatureModal } from './components/candidature-modal/candidature-modal';
+import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
 
 const COLUMNS = [
   { status: CandidatureStatus.ToSend, label: 'À postuler', cls: 'c-postuler' },
@@ -18,9 +19,11 @@ const COLUMNS = [
   { status: CandidatureStatus.NegativeResponse, label: 'Réponse négative', cls: 'c-negative' },
 ];
 
+const STATUS_ORDER = COLUMNS.map((c) => c.status);
+
 @Component({
   selector: 'app-kanban',
-  imports: [KanbanCard, CdkDropListGroup, CdkDropList, CdkDrag, CandidatureModal],
+  imports: [KanbanCard, CdkDropListGroup, CdkDropList, CdkDrag, CandidatureModal, ConfirmDialog],
   templateUrl: './kanban.html',
   styleUrl: './kanban.css',
 })
@@ -34,6 +37,8 @@ export class Kanban {
   readonly total = computed(() => this.candidatures().length);
   readonly isEmpty = computed(() => !this.loading() && this.total() === 0);
   readonly modalOpen = signal(false);
+  readonly editingCandidature = signal<CandidatureResponse | null>(null);
+  readonly pendingDelete = signal<CandidatureResponse | null>(null);
 
   private readonly collapsed = signal<Set<CandidatureStatus>>(new Set());
   isCollapsed = (status: CandidatureStatus) => this.collapsed().has(status);
@@ -63,28 +68,95 @@ export class Kanban {
     });
   }
 
-  // TODO: appeler CandidatureService.update(id, { ..., status: newStatus }) pour persister
+  canMoveLeft(status: CandidatureStatus): boolean {
+    return STATUS_ORDER.indexOf(status) > 0;
+  }
+
+  canMoveRight(status: CandidatureStatus): boolean {
+    return STATUS_ORDER.indexOf(status) < STATUS_ORDER.length - 1;
+  }
+
   drop(event: CdkDragDrop<CandidatureResponse[]>, newStatus: CandidatureStatus): void {
     if (event.previousContainer === event.container) return;
+    const card = event.previousContainer.data[event.previousIndex];
+    this.persistStatus(card, newStatus);
+  }
 
-    const cardId = event.previousContainer.data[event.previousIndex].id;
+  moveCard(card: CandidatureResponse, direction: -1 | 1): void {
+    const target = STATUS_ORDER[STATUS_ORDER.indexOf(card.status) + direction];
+    if (target !== undefined) this.persistStatus(card, target);
+  }
+
+  private persistStatus(card: CandidatureResponse, newStatus: CandidatureStatus): void {
+    const oldStatus = card.status;
+
     this.candidatures.update((list) =>
-      list.map((c) => (c.id === cardId ? { ...c, status: newStatus } : c)),
+      list.map((c) => (c.id === card.id ? { ...c, status: newStatus } : c)),
     );
+
+    this.candidatureService
+      .update(card.id, {
+        title: card.title,
+        location: card.location,
+        urlOffer: card.urlOffer,
+        description: card.description,
+        contractType: card.contractType,
+        status: newStatus,
+        postulationDate: card.postulationDate,
+        entrepriseId: card.entrepriseId,
+      })
+      .subscribe({
+        error: () =>
+          this.candidatures.update((list) =>
+            list.map((c) => (c.id === card.id ? { ...c, status: oldStatus } : c)),
+          ),
+      });
   }
 
   // TODO: brancher l'ouverture du modal Ajouter une candidature
   openAddModal(): void {
+    this.editingCandidature.set(null);
+    this.modalOpen.set(true);
+  }
+
+  openEditModal(candidature: CandidatureResponse): void {
+    this.editingCandidature.set(candidature);
     this.modalOpen.set(true);
   }
 
   closeModal(): void {
     this.modalOpen.set(false);
+    this.editingCandidature.set(null);
   }
 
-  onCandidatureSaved(created: CandidatureResponse): void {
-    this.candidatures.update((list) => [...list, created]);
-    this.modalOpen.set(false);
+  onCandidatureSaved(saved: CandidatureResponse): void {
+    const isEdit = this.editingCandidature() !== null;
+    this.candidatures.update((list) =>
+      isEdit ? list.map((c) => (c.id === saved.id ? saved : c)) : [...list, saved],
+    );
+    this.closeModal();
+  }
+
+  requestDelete(candidature: CandidatureResponse): void {
+    this.pendingDelete.set(candidature);
+  }
+
+  cancelDelete(): void {
+    this.pendingDelete.set(null);
+  }
+
+  confirmDelete(): void {
+    const candidature = this.pendingDelete();
+    if (!candidature) return;
+
+    const previous = this.candidatures();
+    // Optimistic UI
+    this.candidatures.update((list) => list.filter((c) => c.id !== candidature.id));
+    this.pendingDelete.set(null);
+
+    this.candidatureService.delete(candidature.id).subscribe({
+      error: () => this.candidatures.set(previous),
+    });
   }
 
   logout(): void {

@@ -1,0 +1,25 @@
+<div class="overlay" (click)="onOverlayClick($event)">
+  <div class="dialog" role="alertdialog" aria-modal="true">
+    <div class="dhead">
+      @if (variant() === 'danger') {
+        <div class="dicon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L1.5 21h21L12 2zM12 9v5M12 17.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      }
+      <h2 class="dtitle">{{ title() }}</h2>
+    </div>
+
+    @if (message()) {
+      <p class="dmsg">{{ message() }}</p>
+    }
+
+    <div class="dfoot">
+      <button type="button" class="dbtn-g" (click)="cancelled.emit()">{{ cancelLabel() }}</button>
+      <button type="button" class="dbtn-p" [class.danger]="variant() === 'danger'" (click)="confirmed.emit()">
+        {{ confirmLabel() }}
+      </button>
+    </div>
+  </div>
+</div>

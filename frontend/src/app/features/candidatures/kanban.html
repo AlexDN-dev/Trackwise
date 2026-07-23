@@ -51,8 +51,21 @@
 
   @if (modalOpen()) {
     <app-candidature-modal
+      [existing]="editingCandidature()"
       (close)="closeModal()"
       (saved)="onCandidatureSaved($event)"
+    />
+  }
+
+  @if (pendingDelete(); as candidature) {
+    <app-confirm-dialog
+      variant="danger"
+      title="Supprimer la candidature ?"
+      [message]="'Cette action supprimera définitivement « ' + candidature.title + ' ».'"
+      confirmLabel="Supprimer"
+      cancelLabel="Annuler"
+      (confirmed)="confirmDelete()"
+      (cancelled)="cancelDelete()"
     />
   }
 
@@ -101,7 +114,16 @@
             (cdkDropListDropped)="drop($event, col.status)"
           >
             @for (card of col.cards; track card.id) {
-              <app-kanban-card [card]="card" cdkDrag />
+              <app-kanban-card
+                [card]="card"
+                cdkDrag
+                [canMoveLeft]="canMoveLeft(card.status)"
+                [canMoveRight]="canMoveRight(card.status)"
+                (edit)="openEditModal($event)"
+                (delete)="requestDelete($event)"
+                (moveLeft)="moveCard($event, -1)"
+                (moveRight)="moveCard($event, 1)"
+              />
             } @empty {
               <div class="kempty">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none">

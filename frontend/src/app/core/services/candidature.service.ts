@@ -25,7 +25,7 @@ export class CandidatureService {
     return this.http.put<CandidatureResponse>(`${this.baseUrl}/${id}`, request);
   }
 
-  delete(id: string, request: UpdateCandidatureRequest): Observable<void> {
+  delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

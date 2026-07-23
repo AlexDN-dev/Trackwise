@@ -1,5 +1,6 @@
 :host {
   display: block;
+  position: relative;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 13px;
@@ -94,6 +95,48 @@
   font-weight: 600;
 }
 .kloc { display: flex; align-items: center; gap: 4px; }
+
+/* --- Menu 3-points --- */
+.card-menu {
+  position: absolute;
+  top: 42px;
+  right: 8px;
+  z-index: 10;
+  width: 168px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 5px;
+  box-shadow: 0 14px 32px -12px rgba(22, 23, 50, .28);
+  animation: menupop .12s ease;
+}
+@keyframes menupop {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+.cmi {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background .12s;
+}
+.cmi:hover { background: var(--line2); }
+.cmi svg { color: var(--ink2); flex: none; }
+.cmi-del { color: #dc4d6f; }
+.cmi-del svg { color: #dc4d6f; }
+.cmi-del:hover { background: #fdedf1; }
+.cmi-sep { height: 1px; background: var(--line2); margin: 4px 6px; }
 
 /* --- CDK drag preview / placeholder --- */
 :host(.cdk-drag-preview) {
