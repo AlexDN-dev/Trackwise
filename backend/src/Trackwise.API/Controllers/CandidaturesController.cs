@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Trackwise.API.Extensions;
 using Trackwise.Application.Candidatures;
 using Trackwise.Application.Candidatures.Dtos;
+using Microsoft.AspNetCore.RateLimiting;
+using Trackwise.Application.AI;
+using Trackwise.Application.AI.Dtos;
 
 namespace Trackwise.API.Controllers;
 
@@ -12,10 +15,12 @@ namespace Trackwise.API.Controllers;
 public class CandidaturesController : ControllerBase
 {
     private readonly ICandidatureService _service;
-
-    public CandidaturesController(ICandidatureService service)
+    private readonly IAnalysisService _analysisService;
+    
+    public CandidaturesController(ICandidatureService service, IAnalysisService analysisService)
     {
         _service = service;
+        _analysisService = analysisService;
     }
 
     [HttpGet]
@@ -50,5 +55,16 @@ public class CandidaturesController : ControllerBase
     {
         var deleted = await _service.DeleteAsync(id, User.GetUserId(), cancellationToken);
         return deleted ? NoContent() : NotFound();
+    }
+
+    [HttpPost("analyze")]
+    [EnableRateLimiting("ai")]
+    public async Task<ActionResult<AnalysisResult>> Analyze(AnalyzeRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _analysisService.AnalyzeAsync(request.Text, cancellationToken);
+        if (result is null)
+            return StatusCode(503, new { message = "L'analyse IA a échoué. Réessaie ou saisis manuellement." });
+
+        return Ok(result);
     }
 }

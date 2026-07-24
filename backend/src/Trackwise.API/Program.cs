@@ -70,6 +70,17 @@ try
                     PermitLimit = 5,
                     Window = TimeSpan.FromSeconds(30)
                 }));
+        
+        options.AddPolicy("ai", httpContext =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                partitionKey: httpContext.User.FindFirst("sub")?.Value
+                              ?? httpContext.Connection.RemoteIpAddress?.ToString()
+                              ?? "anonymous",
+                factory: _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 5,
+                    Window = TimeSpan.FromMinutes(1)
+                }));
     });
 
     var app = builder.Build();

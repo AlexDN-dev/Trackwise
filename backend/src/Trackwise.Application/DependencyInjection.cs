@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Trackwise.Application.AI;
+using Trackwise.Application.AI.Services;
 using Trackwise.Application.Auth;
 using Trackwise.Application.Auth.Services;
 using Trackwise.Application.Candidatures;
@@ -16,6 +18,8 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
 
         services.AddScoped<IEntrepriseService, EntrepriseService>();
+
+        services.AddScoped<IAnalysisService, AnalysisService>();
         return services;
     }
 }
