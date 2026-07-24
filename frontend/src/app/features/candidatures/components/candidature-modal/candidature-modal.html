@@ -2,8 +2,16 @@
   <div class="modal" role="dialog" aria-modal="true">
     <div class="mhead">
       <div>
-        <h2 class="mtitle">{{ isEdit() ? 'Modifier la candidature' : 'Ajouter une candidature' }}</h2>
-        <p class="msub">{{ isEdit() ? 'Mets à jour les informations.' : 'Suivez une nouvelle offre en quelques secondes.' }}</p>
+        <h2 class="mtitle">
+          @if (isEdit()) { Modifier la candidature }
+          @else if (isPrefill()) { Vérifier les informations extraites }
+          @else { Ajouter une candidature }
+        </h2>
+        <p class="msub">
+          @if (isPrefill()) { L'IA a rempli le formulaire — ajustez si besoin. }
+          @else if (isEdit()) { Mets à jour les informations. }
+          @else { Suivez une nouvelle offre en quelques secondes. }
+        </p>
       </div>
       <button type="button" class="mclose" (click)="close.emit()" title="Fermer">
         <svg width="16" height="16" viewBox="0 0 16 16">
@@ -11,7 +19,7 @@
         </svg>
       </button>
     </div>
-    @if(!isEdit()) {
+    @if(showTabs()) {
       <div class="mtabs">
         <button type="button" class="mtab" [class.on]="mode() === 'manual'" (click)="setMode('manual')">
         <span class="mtab-ic">
@@ -97,18 +105,23 @@
             <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.4"></circle>
             <path d="M9 8v4M9 6h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
           </svg>
-          Collez le lien ou le texte complet d'une offre — l'IA extrait tout automatiquement.
+          Collez le texte complet d'une offre — l'IA extrait tout automatiquement (~10-20s).
         </div>
 
-        <textarea class="aidrop" placeholder="Ex : https://www.linkedin.com/jobs/… ou collez ici la description complète du poste (missions, technologies, entreprise…)"></textarea>
+        <textarea
+          #aiTextRef
+          class="aidrop"
+          (input)="aiText.set(aiTextRef.value)"
+          placeholder="Ex : collez ici la description complète du poste (missions, technologies, entreprise…)"
+        ></textarea>
 
         <div style="height:16px"></div>
 
-        <button type="button" class="aibtn" disabled>
+        <button type="button" class="aibtn" [disabled]="!canAnalyze()" (click)="analyzeAi()">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M9 1.5l1.6 3.6 3.9.4-2.9 2.6.8 3.8L9 14.6l-3.4 1.9.8-3.8L3.5 6.1l3.9-.4L9 1.5z" fill="#fff"></path>
           </svg>
-          Analyser avec l'IA (bientôt)
+          Analyser avec l'IA
         </button>
       }
     </div>

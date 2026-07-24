@@ -36,6 +36,7 @@ public static class DependencyInjection
 
         services.Configure<OllamaSettings>(configuration.GetSection(OllamaSettings.SectionName));
 
+        services.AddHostedService<OllamaWarmupService>();
         services.AddHttpClient<IOllamaClient, OllamaClient>((sp, client) =>
         {
             var options = sp.GetRequiredService<IOptions<OllamaSettings>>().Value;

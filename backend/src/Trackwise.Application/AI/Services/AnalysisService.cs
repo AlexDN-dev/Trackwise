@@ -15,26 +15,48 @@ public class AnalysisService : IAnalysisService
         PropertyNameCaseInsensitive = true,
     };
     
-    private const string SystemPrompt = """
-                                        Tu es un extracteur d'informations d'offres d'emploi.
-                                        Extrait UNIQUEMENT ce qui est EXPLICITEMENT mentionne dans l'offre. N'INVENTE RIEN.
+private const string SystemPrompt = """
+    Tu es un extracteur d'informations d'offres d'emploi.
 
-                                        Reponds STRICTEMENT en JSON avec ces champs exacts :
-                                        {
-                                          "title": string | null,           // intitule du poste
-                                          "entrepriseName": string | null,  // nom de l'entreprise qui recrute
-                                          "location": string | null,        // ville / region
-                                          "contractType": 1 | 2 | 3 | null, // 1=CDI, 2=CDD, 3=Interim ; null si non precise
-                                          "urlOffer": string | null,        // URL presente dans le texte, sinon null
-                                          "description": string | null,     // resume du poste en 1-2 phrases (max 200 caracteres)
-                                          "competences": string[]           // technos/competences demandees (courtes, ex: "C#", ".NET", "Angular")
-                                        }
+    REGLES ABSOLUES :
+    - Reponds STRICTEMENT en JSON, aucun texte hors du JSON.
+    - Reponds TOUJOURS en FRANCAIS. Traduis systematiquement les intitules et descriptions, meme si l'offre est en anglais, neerlandais, allemand ou toute autre langue.
+    - N'invente PAS de faits (ville, entreprise, URL, salaire). Champ non trouve = null.
+    - EXCEPTION pour "title" : si l'offre ne cite pas d'intitule explicite, deduis-en un court a partir des technos et du role, EN FRANCAIS.
 
-                                        Regles strictes :
-                                        - Un champ non trouve = null (ou [] pour competences).
-                                        - Ne renvoie AUCUN texte en dehors du JSON.
-                                        - Les competences sont TOUJOURS des noms courts, pas des phrases.
-                                        """;
+    CHAMPS ATTENDUS :
+    {
+      "title": string | null,
+        // Intitule du poste EN FRANCAIS, max 80 caracteres.
+      "entrepriseName": string | null,
+        // Nom OFFICIEL de l'entreprise qui recrute (pas un mot au hasard du texte).
+        "location": string | null,
+        // Format "Ville, Pays" (ex: "Bruxelles, Belgique", "Paris, France", "Utrecht, Pays-Bas").
+        // Ignore les regions/departements/provinces. Si aucun lieu geographique explicite : null.
+      "contractType": 1 | 2 | 3 | null,
+        // 1=CDI, 2=CDD, 3=Interim ; null si non precise.
+      "urlOffer": string | null,
+        // URL commencant par http:// ou https:// presente dans le texte. Sinon null.
+      "description": string | null,
+        // Resume du poste EN FRANCAIS, 3 a 4 phrases, max 400 caracteres. Couvre : missions principales, technos clefs, contexte de l'equipe.
+      "competences": string[]
+        // Noms COURTS et ORIGINAUX des technos (ne pas traduire) : "C#", ".NET", "Angular", "Python", "PostgreSQL".
+    }
+
+    EXEMPLES :
+
+    Offre 1 :
+    "Backend Developer at Spotify in Stockholm. Permanent contract. You will build our microservices APIs in Java and Kotlin. Apply at https://spotify.com/careers/be-dev-42"
+
+    JSON 1 :
+    {"title":"Développeur Backend","entrepriseName":"Spotify","location":"Stockholm, Suède","contractType":1,"urlOffer":"https://spotify.com/careers/be-dev-42","description":"Développement des APIs microservices de Spotify en Java et Kotlin. Vous rejoindrez l'équipe backend responsable du cœur de la plateforme. Environnement technique moderne et pratiques DevOps solides.","competences":["Java","Kotlin"]}
+
+    Offre 2 :
+    "Wij zoeken een enthousiaste .NET developer bij Bol.com. Locatie: Utrecht. Voltijds vast contract. Ervaring met C# en Azure."
+
+    JSON 2 :
+    {"title":"Développeur .NET","entrepriseName":"Bol.com","location":"Utrecht, Pays-Bas","contractType":1,"urlOffer":null,"description":"Poste de développeur .NET à temps plein chez Bol.com. Vous travaillerez sur des services C# hébergés sur Azure. Contrat CDI, équipe produit e-commerce.","competences":["C#",".NET","Azure"]}
+    """;
 
     public AnalysisService(IOllamaClient ollama, ILogger<AnalysisService> logger)
     {

@@ -52,6 +52,7 @@
   @if (modalOpen()) {
     <app-candidature-modal
       [existing]="editingCandidature()"
+      [prefill]="aiPrefill()"
       (close)="closeModal()"
       (saved)="onCandidatureSaved($event)"
     />

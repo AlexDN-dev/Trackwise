@@ -1,0 +1,27 @@
+@if (visible()) {
+  <div class="ai-badge" [class.running]="active()" [class.ready]="ready()" [class.failed]="failed()">
+    @if (active()) {
+      <div class="ai-inner" title="Analyse IA en cours…">
+        <span class="ai-spinner"></span>
+        <span class="ai-label">Analyse IA en cours…</span>
+      </div>
+    } @else if (ready()) {
+      <button type="button" class="ai-inner ai-click" (click)="onClickReady()" title="Voir l'offre extraite">
+        <span class="ai-check">
+          <svg width="14" height="14" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3L9.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </span>
+        <span class="ai-label">Offre prête — cliquer pour voir</span>
+      </button>
+    } @else if (failed()) {
+      <div class="ai-inner">
+        <span class="ai-cross">
+          <svg width="14" height="14" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </span>
+        <span class="ai-label">{{ failed()!.error }}</span>
+        <button type="button" class="ai-close" (click)="dismissFailed()" title="Fermer">
+          <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    }
+  </div>
+}

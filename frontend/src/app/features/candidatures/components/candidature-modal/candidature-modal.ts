@@ -10,6 +10,8 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CandidatureService } from '../../../../core/services/candidature.service';
 import { CandidatureResponse, ContractType } from '../../../../core/models/candidature.models';
+import { AiAnalysisService } from '../../../../core/services/ai-analysis.service';
+import { AnalysisResult } from '../../../../core/models/ai.models';
 
 @Component({
   selector: 'app-candidature-modal',
@@ -20,6 +22,14 @@ import { CandidatureResponse, ContractType } from '../../../../core/models/candi
 export class CandidatureModal implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly candidatureService = inject(CandidatureService);
+  private readonly aiService = inject(AiAnalysisService);
+
+  readonly prefill = input<AnalysisResult | null>(null);
+  readonly isPrefill = computed(() => this.prefill() !== null);
+  readonly showTabs = computed(() => !this.isEdit() && !this.isPrefill());
+
+  readonly aiText = signal('');
+  readonly canAnalyze = computed(() => this.aiText().trim().length >= 50);
 
   readonly close = output<void>();
   readonly saved = output<CandidatureResponse>();
@@ -46,15 +56,26 @@ export class CandidatureModal implements OnInit {
   });
 
   ngOnInit(): void {
-    const c = this.existing();
-    if (c) {
+    const existing = this.existing();
+    const prefill = this.prefill();
+
+    if (existing) {
       this.form.patchValue({
-        title: c.title,
-        entrepriseName: c.entrepriseName ?? '',
-        location: c.location ?? '',
-        contractType: c.contractType,
-        urlOffer: c.urlOffer ?? '',
-        description: c.description ?? '',
+        title: existing.title,
+        entrepriseName: existing.entrepriseName ?? '',
+        location: existing.location ?? '',
+        contractType: existing.contractType,
+        urlOffer: existing.urlOffer ?? '',
+        description: existing.description ?? '',
+      });
+    } else if (prefill) {
+      this.form.patchValue({
+        title: prefill.title ?? '',
+        entrepriseName: prefill.entrepriseName ?? '',
+        location: prefill.location ?? '',
+        contractType: prefill.contractType ?? ContractType.CDI,
+        urlOffer: prefill.urlOffer ?? '',
+        description: prefill.description ?? '',
       });
     }
   }
@@ -66,6 +87,13 @@ export class CandidatureModal implements OnInit {
 
   onOverlayClick(event: MouseEvent): void {
     if (event.target === event.currentTarget) this.close.emit();
+  }
+
+  analyzeAi() : void {
+    if(!this.canAnalyze()) return;
+    this.aiService.analyze(this.aiText().trim());
+    this.aiText.set('');
+    this.close.emit();
   }
 
   submit(): void {

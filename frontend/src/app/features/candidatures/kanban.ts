@@ -10,6 +10,9 @@ import {
 import { KanbanCard } from './components/kanban-card/kanban-card';
 import { CandidatureModal } from './components/candidature-modal/candidature-modal';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
+import { effect } from '@angular/core';
+import { AiAnalysisService} from '../../core/services/ai-analysis.service';
+import { AnalysisResult} from '../../core/models/ai.models';
 
 const COLUMNS = [
   { status: CandidatureStatus.ToSend, label: 'À postuler', cls: 'c-postuler' },
@@ -31,6 +34,7 @@ export class Kanban {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly candidatureService = inject(CandidatureService);
+  private readonly aiService  = inject(AiAnalysisService);
 
   readonly candidatures = signal<CandidatureResponse[]>([]);
   readonly loading = signal(true);
@@ -39,6 +43,7 @@ export class Kanban {
   readonly modalOpen = signal(false);
   readonly editingCandidature = signal<CandidatureResponse | null>(null);
   readonly pendingDelete = signal<CandidatureResponse | null>(null);
+  readonly aiPrefill = signal<AnalysisResult | null>(null);
 
   private readonly collapsed = signal<Set<CandidatureStatus>>(new Set());
   isCollapsed = (status: CandidatureStatus) => this.collapsed().has(status);
@@ -57,6 +62,20 @@ export class Kanban {
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
+    });
+
+    effect(() => {
+      const jobId = this.aiService.openRequest();
+      if (!jobId) return;
+      const job = this.aiService.readyJob();
+      if (!job || !job.result) return;
+
+      this.aiPrefill.set(job.result);
+      this.editingCandidature.set(null);
+      this.modalOpen.set(true);
+
+      this.aiService.clearOpenRequest();
+      this.aiService.consume(jobId);
     });
   }
 
@@ -113,9 +132,9 @@ export class Kanban {
       });
   }
 
-  // TODO: brancher l'ouverture du modal Ajouter une candidature
   openAddModal(): void {
     this.editingCandidature.set(null);
+    this.aiPrefill.set(null);
     this.modalOpen.set(true);
   }
 
@@ -127,6 +146,7 @@ export class Kanban {
   closeModal(): void {
     this.modalOpen.set(false);
     this.editingCandidature.set(null);
+    this.aiPrefill.set(null);
   }
 
   onCandidatureSaved(saved: CandidatureResponse): void {
