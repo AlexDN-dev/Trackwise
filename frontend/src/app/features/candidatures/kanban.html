@@ -23,7 +23,12 @@
         <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"></circle>
         <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
       </svg>
-      <input placeholder="Rechercher…" />
+      <input
+        placeholder="Rechercher…"
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+        (keydown.escape)="clearSearch(); $any($event.target).blur()"
+      />
     </div>
 
     <button type="button" class="iconbtn" title="Notifications">
@@ -45,7 +50,15 @@
 
   <div class="subbar">
     <span class="pgtitle">Mes candidatures</span>
-    <span class="pgcount">{{ total() }} au total</span>
+    @if (hasSearch()) {
+      <span class="pgcount">
+      {{ matchCount() }} résultat{{ matchCount() > 1 ? 's' : '' }}
+        pour « {{ searchQuery() }} »
+    </span>
+      <button type="button" class="linkbtn" (click)="clearSearch()">Effacer</button>
+    } @else {
+      <span class="pgcount">{{ total() }} au total</span>
+    }
     <div class="hspace"></div>
   </div>
 

@@ -34,7 +34,7 @@ export class Kanban {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly candidatureService = inject(CandidatureService);
-  private readonly aiService  = inject(AiAnalysisService);
+  private readonly aiService = inject(AiAnalysisService);
 
   readonly candidatures = signal<CandidatureResponse[]>([]);
   readonly loading = signal(true);
@@ -44,6 +44,19 @@ export class Kanban {
   readonly editingCandidature = signal<CandidatureResponse | null>(null);
   readonly pendingDelete = signal<CandidatureResponse | null>(null);
   readonly aiPrefill = signal<AnalysisResult | null>(null);
+  readonly searchQuery = signal('');
+
+  readonly filteredCandidatures = computed(() => {
+    const tokens = this.norm(this.searchQuery()).split(/\s+/).filter(Boolean);
+    if (tokens.length === 0) return this.candidatures();
+    return this.candidatures().filter((c) => {
+      const haystack = this.norm(`${c.title} ${c.entrepriseName ?? ''}`);
+      return tokens.every((t) => haystack.includes(t));
+    });
+  });
+
+  readonly hasSearch = computed (() => this.searchQuery().trim().length > 0);
+  readonly matchCount = computed(() => this.filteredCandidatures().length);
 
   private readonly collapsed = signal<Set<CandidatureStatus>>(new Set());
   isCollapsed = (status: CandidatureStatus) => this.collapsed().has(status);
@@ -51,9 +64,15 @@ export class Kanban {
   readonly columns = computed(() =>
     COLUMNS.map((col) => ({
       ...col,
-      cards: this.candidatures().filter((c) => c.status === col.status),
+      cards: this.filteredCandidatures().filter((c) => c.status === col.status),
     })),
   );
+
+  norm = (s: string) =>
+    s
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '');
 
   constructor() {
     this.candidatureService.getAll().subscribe({
@@ -177,6 +196,10 @@ export class Kanban {
     this.candidatureService.delete(candidature.id).subscribe({
       error: () => this.candidatures.set(previous),
     });
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
   }
 
   logout(): void {

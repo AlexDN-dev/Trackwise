@@ -197,6 +197,16 @@
   align-items: stretch;
 }
 
+.linkbtn {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.linkbtn:hover { text-decoration: underline; }
+
 .kcol {
   flex: 1 1 0;
   min-width: 240px;
