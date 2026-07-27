@@ -1,3 +1,4 @@
+using Trackwise.Application.Competences.Dtos;
 using Trackwise.Domain.Enums;
 
 namespace Trackwise.Application.Candidatures.Dtos;
@@ -13,7 +14,11 @@ public class CandidatureResponse
     public ContractType ContractType { get; set; }
     public DateOnly? PostulationDate { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
-    
+
     public Guid EntrepriseId { get; set; }
     public string? EntrepriseName { get; set; }
+
+    public List<CompetenceResponse> Competences { get; set; } = new();
+    public byte? Score { get; set; }
+    public List<string> MissingCompetences { get; set; } = new();
 }

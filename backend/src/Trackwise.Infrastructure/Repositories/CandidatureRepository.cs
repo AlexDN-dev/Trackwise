@@ -18,6 +18,7 @@ public class CandidatureRepository : ICandidatureRepository
     {
         return await _context.Candidatures.Where(c => c.UserId == userId)
             .Include(c => c.Entreprise)
+            .Include(c => c.Competences)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
@@ -26,6 +27,7 @@ public class CandidatureRepository : ICandidatureRepository
     {
         return await _context.Candidatures
             .Include(c => c.Entreprise)
+            .Include(c => c.Competences)
             .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, cancellationToken);    }
 
     public void Add(Candidature candidature)

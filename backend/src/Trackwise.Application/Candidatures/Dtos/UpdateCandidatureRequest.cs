@@ -9,7 +9,7 @@ public class UpdateCandidatureRequest
     public string Title { get; set; } = null!;
     [MaxLength(100)]
     public string? Location { get; set; }
-    [MaxLength(256)]
+    [MaxLength(2000)]
     public string? UrlOffer { get; set; }
     [MaxLength(2000)]
     public string? Description { get; set; }
@@ -19,4 +19,6 @@ public class UpdateCandidatureRequest
     
     [Required]
     public Guid EntrepriseId { get; set; }
+    
+    public List<string>? Competences { get; set; }
 }

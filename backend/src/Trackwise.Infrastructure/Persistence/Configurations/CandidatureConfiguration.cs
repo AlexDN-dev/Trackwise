@@ -10,7 +10,7 @@ public class CandidatureConfiguration : IEntityTypeConfiguration<Candidature>
     {
         builder.Property(c => c.Title).HasMaxLength(100);
         builder.Property(c => c.Location).HasMaxLength(100);
-        builder.Property(c => c.UrlOffer).HasMaxLength(256);
+        builder.Property(c => c.UrlOffer).HasMaxLength(2000);
         builder.Property(c => c.Description).HasMaxLength(2000);
 
         builder.HasOne(c => c.Entreprise)

@@ -9,13 +9,14 @@ public class CreateCandidatureRequest : IValidatableObject
     public string Title { get; set; } = null!;
     [MaxLength(100)]
     public string? Location { get; set; }
-    [MaxLength(256)]
+    [MaxLength(2000)]
     public string? UrlOffer { get; set; }
     [MaxLength(2000)]
     public string? Description { get; set; }
     public ContractType ContractType { get; set; }
     public DateOnly? PostulationDate { get; set; }
     public Guid? EntrepriseId { get; set; }
+    public List<string>? Competences { get; set; }
     
     [MaxLength(150)]
     public string? EntrepriseName { get; set; }
