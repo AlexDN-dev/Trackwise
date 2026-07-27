@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CdkDrag, CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
 import { AuthService } from '../../core/services/auth.service';
 import { CandidatureService } from '../../core/services/candidature.service';
@@ -26,7 +26,7 @@ const STATUS_ORDER = COLUMNS.map((c) => c.status);
 
 @Component({
   selector: 'app-kanban',
-  imports: [KanbanCard, CdkDropListGroup, CdkDropList, CdkDrag, CandidatureModal, ConfirmDialog],
+  imports: [KanbanCard, CdkDropListGroup, CdkDropList, CdkDrag, CandidatureModal, ConfirmDialog, RouterLink],
   templateUrl: './kanban.html',
   styleUrl: './kanban.css',
 })

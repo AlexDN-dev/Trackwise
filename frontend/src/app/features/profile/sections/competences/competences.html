@@ -1,0 +1,91 @@
+<div class="page">
+  <header class="ph">
+    <h1 class="ph-t">Compétences</h1>
+    <p class="ph-s">
+      Elles servent à calculer votre score de compatibilité avec chaque offre d'emploi.
+    </p>
+  </header>
+
+  <div class="card">
+    <label class="lbl" for="skillInput">Ajouter une compétence</label>
+
+    <div class="typeahead">
+      <div class="typeahead-input">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"></circle>
+          <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+        </svg>
+        <input
+          #typeahead
+          id="skillInput"
+          type="text"
+          class="ta-fld"
+          placeholder="Ex. React, PostgreSQL, Kubernetes…"
+          autocomplete="off"
+          [ngModel]="query()"
+          (ngModelChange)="query.set($event)"
+          (focus)="onFocus()"
+          (blur)="onBlur()"
+          (keydown.enter)="$event.preventDefault(); onEnter()"
+          (keydown.escape)="query.set(''); $any($event.target).blur()"
+        />
+      </div>
+
+      @if (dropdownOpen() && query().trim().length > 0 && (suggestions().length > 0 || canCreate())) {
+        <div class="ta-drop">
+          @for (s of suggestions(); track s) {
+            <button type="button" class="ta-item" (mousedown)="addFromName(s)">
+              <span class="ta-item-name">{{ s }}</span>
+              <span class="ta-item-hint">Ajouter</span>
+            </button>
+          }
+          @if (canCreate()) {
+            <button type="button" class="ta-item ta-create" (mousedown)="addFromName(query())">
+              <span class="ta-item-ic">
+                <svg width="14" height="14" viewBox="0 0 16 16">
+                  <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path>
+                </svg>
+              </span>
+              <span class="ta-item-name">Créer « {{ query().trim() }} »</span>
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="hint">
+      Tapez pour rechercher parmi les compétences existantes, ou créez la vôtre.
+    </div>
+
+    @if (competences().length > 0) {
+      <div class="chips">
+        @for (c of competences(); track c.id) {
+          <span class="chip">
+            {{ c.name }}
+            <button type="button" class="chip-x" (click)="remove(c)" [attr.aria-label]="'Retirer ' + c.name">
+              <svg width="10" height="10" viewBox="0 0 10 10">
+                <path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </span>
+        }
+      </div>
+
+      <div class="skills-count">
+        {{ competences().length }} compétence{{ competences().length > 1 ? 's' : '' }}
+      </div>
+    } @else {
+      <div class="empty">
+        <div class="empty-ic">
+          <svg width="34" height="34" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2l2.4 5 5.6.8-4 3.9 1 5.5-5-2.7-5 2.7 1-5.5-4-3.9 5.6-.8L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="empty-t">Aucune compétence renseignée</div>
+        <div class="empty-d">
+          Ajoutez vos compétences pour voir votre score de compatibilité sur chaque offre.
+        </div>
+      </div>
+    }
+  </div>
+</div>

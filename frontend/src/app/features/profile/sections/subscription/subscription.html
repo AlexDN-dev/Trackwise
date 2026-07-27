@@ -1,0 +1,125 @@
+<div class="page">
+  <header class="ph">
+    <h1 class="ph-t">Abonnement</h1>
+    <p class="ph-s">Gérez votre plan et débloquez toutes les fonctionnalités de Trackwise.</p>
+  </header>
+
+  @if (isFree()) {
+    <!-- Plan actuel : Free -->
+    <div class="plan plan-current">
+      <div class="plan-hd">
+        <div class="plan-ttl">
+          <div class="plan-badge plan-badge-free">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="plan-name">Gratuit</div>
+            <div class="plan-price">0 € / mois</div>
+          </div>
+        </div>
+        <span class="plan-tag">Actif</span>
+      </div>
+
+      <ul class="feats">
+        @for (f of freeFeatures; track f) {
+          <li>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            {{ f }}
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- Upsell Premium -->
+    <div class="plan plan-premium">
+      <div class="plan-glow"></div>
+      <div class="plan-hd">
+        <div class="plan-ttl">
+          <div class="plan-badge plan-badge-premium">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M2 5.5l2.5 6.5h7L14 5.5l-3 2.5L8 3.5 5 8 2 5.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="plan-name">Premium</div>
+            <div class="plan-price">
+              <span class="price-big">6 €</span>
+              <span class="price-per">/ mois</span>
+            </div>
+          </div>
+        </div>
+        <span class="plan-tag plan-tag-hot">Recommandé</span>
+      </div>
+
+      <div class="plan-sub">Débloquez tout le potentiel de Trackwise :</div>
+
+      <ul class="feats feats-premium">
+        @for (f of premiumFeatures; track f) {
+          <li>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M2 6l6 8 6-12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            {{ f }}
+          </li>
+        }
+      </ul>
+
+      <button type="button" class="btn-upgrade" (click)="upgrade()">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+          <path d="M2 5.5l2.5 6.5h7L14 5.5l-3 2.5L8 3.5 5 8 2 5.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+        Passer à Premium
+      </button>
+
+      <div class="disclaim">
+        Sans engagement · Résiliable à tout moment
+      </div>
+    </div>
+  } @else {
+    <!-- Plan actuel : Premium -->
+    <div class="plan plan-premium plan-current">
+      <div class="plan-glow"></div>
+      <div class="plan-hd">
+        <div class="plan-ttl">
+          <div class="plan-badge plan-badge-premium">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M2 5.5l2.5 6.5h7L14 5.5l-3 2.5L8 3.5 5 8 2 5.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="plan-name">Premium</div>
+            <div class="plan-price">
+              6 € / mois
+              @if (premiumUntil(); as until) {
+                <span class="price-sub">· Prochain paiement le {{ until }}</span>
+              }
+            </div>
+          </div>
+        </div>
+        <span class="plan-tag plan-tag-active">Actif</span>
+      </div>
+
+      <ul class="feats feats-premium">
+        @for (f of premiumFeatures; track f) {
+          <li>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M2 6l6 8 6-12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            {{ f }}
+          </li>
+        }
+      </ul>
+
+      <div class="plan-actions">
+        <button type="button" class="btn-g" (click)="manage()">
+          Gérer mon abonnement
+        </button>
+        <button type="button" class="btn-ghost">Résilier</button>
+      </div>
+    </div>
+  }
+</div>

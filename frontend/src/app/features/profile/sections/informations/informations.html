@@ -1,0 +1,69 @@
+<div class="page">
+  <header class="ph">
+    <h1 class="ph-t">Informations</h1>
+    <p class="ph-s">Ces informations apparaissent sur votre compte et vos candidatures.</p>
+  </header>
+
+  <div class="card">
+    <div class="identity">
+      <div class="idavatar">{{ initials().toUpperCase() }}</div>
+      <div class="idmeta">
+        <div class="idname">{{ displayName() || 'Sans nom' }}</div>
+        <div class="idmail">
+          {{ email() }}
+          @if (!emailConfirmed()) {
+            <span class="pill pill-warn">Non vérifié</span>
+          } @else {
+            <span class="pill pill-ok">Vérifié</span>
+          }
+        </div>
+        <div class="idmember">Membre depuis {{ memberSince() }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="csect">
+      <label class="lbl" for="displayName">Nom d'affichage</label>
+      <input
+        id="displayName"
+        type="text"
+        class="fld"
+        maxlength="50"
+        [ngModel]="displayName()"
+        (ngModelChange)="displayName.set($event)"
+        placeholder="Votre nom complet"
+      />
+      <div class="hint">
+        Utilisé dans votre avatar et vos exports. 50 caractères max.
+      </div>
+    </div>
+
+    <div class="csect">
+      <label class="lbl" for="email">Adresse e-mail</label>
+      <input
+        id="email"
+        type="email"
+        class="fld fld-ro"
+        [value]="email()"
+        readonly
+      />
+      <div class="hint">
+        Pour changer votre e-mail, contactez le support. Cette action nécessitera une re-vérification.
+      </div>
+    </div>
+
+    <div class="cfoot">
+      <button type="button" class="btn-g" (click)="reset()" [disabled]="!hasChanges() || saving()">
+        Annuler
+      </button>
+      <button type="button" class="btn-p" (click)="save()" [disabled]="!hasChanges() || saving()">
+        @if (saving()) {
+          <span class="spin"></span> Enregistrement…
+        } @else {
+          Enregistrer
+        }
+      </button>
+    </div>
+  </div>
+</div>

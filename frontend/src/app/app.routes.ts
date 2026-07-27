@@ -15,5 +15,41 @@ export const routes: Routes = [
     loadComponent: () => import('./features/candidatures/kanban').then((m) => m.Kanban),
     canActivate: [authGuard],
   },
+  {
+    path: 'profil',
+    loadComponent: () => import('./features/profile/profile').then((m) => m.Profile),
+    canActivate: [authGuard],
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'informations' },
+      {
+        path: 'informations',
+        loadComponent: () =>
+          import('./features/profile/sections/informations/informations').then(
+            (m) => m.ProfileInformations,
+          ),
+      },
+      {
+        path: 'securite',
+        loadComponent: () =>
+          import('./features/profile/sections/security/security').then(
+            (m) => m.ProfileSecurity,
+          ),
+      },
+      {
+        path: 'competences',
+        loadComponent: () =>
+          import('./features/profile/sections/competences/competences').then(
+            (m) => m.ProfileCompetences,
+          ),
+      },
+      {
+        path: 'abonnement',
+        loadComponent: () =>
+          import('./features/profile/sections/subscription/subscription').then(
+            (m) => m.ProfileSubscription,
+          ),
+      },
+    ],
+  },
   { path: '**', redirectTo: '' },
 ];

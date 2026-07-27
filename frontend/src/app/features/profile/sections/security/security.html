@@ -1,0 +1,137 @@
+<div class="page">
+  <header class="ph">
+    <h1 class="ph-t">Sécurité</h1>
+    <p class="ph-s">Protégez votre compte en utilisant un mot de passe solide et unique.</p>
+  </header>
+
+  @if (successMessage(); as msg) {
+    <div class="alert alert-ok">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M6.5 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      {{ msg }}
+    </div>
+  }
+  @if (errorMessage(); as msg) {
+    <div class="alert alert-err">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M10 6v5M10 14v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      {{ msg }}
+    </div>
+  }
+
+  <div class="card">
+    <div class="csect">
+      <h2 class="csect-t">Changer mon mot de passe</h2>
+      <p class="csect-d">Pour votre sécurité, toutes vos autres sessions seront déconnectées.</p>
+    </div>
+
+    <div class="csect">
+      <label class="lbl" for="curPwd">Mot de passe actuel</label>
+      <div class="pwd">
+        <input
+          id="curPwd"
+          [type]="showCurrent() ? 'text' : 'password'"
+          class="fld"
+          autocomplete="current-password"
+          [ngModel]="currentPassword()"
+          (ngModelChange)="currentPassword.set($event)"
+        />
+        <button type="button" class="eye" (click)="showCurrent.set(!showCurrent())" [attr.aria-label]="showCurrent() ? 'Masquer' : 'Afficher'">
+          @if (showCurrent()) {
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+              <path d="M3 3l14 14M8 5.5A10 10 0 0 1 10 5c4 0 7 3 8 5-.5 1-1.3 2.2-2.5 3.2M12 12a3 3 0 0 1-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          } @else {
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+              <path d="M2 10c1-2 4-5 8-5s7 3 8 5c-1 2-4 5-8 5s-7-3-8-5z" stroke="currentColor" stroke-width="1.6"/>
+              <circle cx="10" cy="10" r="2.3" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+          }
+        </button>
+      </div>
+    </div>
+
+    <div class="csect">
+      <label class="lbl" for="newPwd">Nouveau mot de passe</label>
+      <div class="pwd">
+        <input
+          id="newPwd"
+          [type]="showNew() ? 'text' : 'password'"
+          class="fld"
+          autocomplete="new-password"
+          [ngModel]="newPassword()"
+          (ngModelChange)="newPassword.set($event)"
+        />
+        <button type="button" class="eye" (click)="showNew.set(!showNew())" [attr.aria-label]="showNew() ? 'Masquer' : 'Afficher'">
+          @if (showNew()) {
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+              <path d="M3 3l14 14M8 5.5A10 10 0 0 1 10 5c4 0 7 3 8 5-.5 1-1.3 2.2-2.5 3.2M12 12a3 3 0 0 1-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          } @else {
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+              <path d="M2 10c1-2 4-5 8-5s7 3 8 5c-1 2-4 5-8 5s-7-3-8-5z" stroke="currentColor" stroke-width="1.6"/>
+              <circle cx="10" cy="10" r="2.3" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+          }
+        </button>
+      </div>
+
+      @if (newPassword().length > 0) {
+        <div class="strength">
+          <div class="strength-bar" [attr.data-level]="strength()">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <span class="strength-lbl" [attr.data-level]="strength()">{{ strengthLabel() }}</span>
+        </div>
+      }
+
+      <div class="hint">
+        Minimum 8 caractères, avec au moins un chiffre. 12+ caractères et symboles recommandés.
+      </div>
+    </div>
+
+    <div class="csect">
+      <label class="lbl" for="confPwd">Confirmer le nouveau mot de passe</label>
+      <div class="pwd">
+        <input
+          id="confPwd"
+          [type]="showConfirm() ? 'text' : 'password'"
+          class="fld"
+          [class.fld-err]="matchesError()"
+          autocomplete="new-password"
+          [ngModel]="confirmPassword()"
+          (ngModelChange)="confirmPassword.set($event)"
+        />
+        <button type="button" class="eye" (click)="showConfirm.set(!showConfirm())" [attr.aria-label]="showConfirm() ? 'Masquer' : 'Afficher'">
+          @if (showConfirm()) {
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+              <path d="M3 3l14 14M8 5.5A10 10 0 0 1 10 5c4 0 7 3 8 5-.5 1-1.3 2.2-2.5 3.2M12 12a3 3 0 0 1-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          } @else {
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+              <path d="M2 10c1-2 4-5 8-5s7 3 8 5c-1 2-4 5-8 5s-7-3-8-5z" stroke="currentColor" stroke-width="1.6"/>
+              <circle cx="10" cy="10" r="2.3" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+          }
+        </button>
+      </div>
+      @if (matchesError()) {
+        <div class="hint hint-err">Les mots de passe ne correspondent pas.</div>
+      }
+    </div>
+
+    <div class="cfoot">
+      <button type="button" class="btn-p" (click)="submit()" [disabled]="!canSubmit()">
+        @if (saving()) {
+          <span class="spin"></span> Mise à jour…
+        } @else {
+          Mettre à jour le mot de passe
+        }
+      </button>
+    </div>
+  </div>
+</div>
