@@ -11,7 +11,11 @@ public class User : BaseEntity
     public required string PasswordHash { get; set; }
     public UserRole Role { get; set; } = UserRole.User;
     public PlanType PlanType { get; set; } = PlanType.Free;
+    public string? StripeCustomerId { get; set; }
+    public string? StripeSubscriptionId { get; set; }
+    public DateTimeOffset? PremiumUntil { get; set; }
 
     public ICollection<Candidature> Candidatures { get; set; } = new List<Candidature>();
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public ICollection<UserCompetence> UserCompetences { get; set; } = new List<UserCompetence>();
 }

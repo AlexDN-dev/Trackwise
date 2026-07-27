@@ -5,9 +5,12 @@ using Microsoft.Extensions.Options;
 using Trackwise.Application.Auth;
 using Trackwise.Application.Candidatures;
 using Trackwise.Application.Common.Interfaces;
+using Trackwise.Application.Competences;
 using Trackwise.Application.Entreprises;
+using Trackwise.Application.Subscriptions;
 using Trackwise.Infrastructure.AI;
 using Trackwise.Infrastructure.Authentication;
+using Trackwise.Infrastructure.Payments;
 using Trackwise.Infrastructure.Persistence;
 using Trackwise.Infrastructure.Repositories;
 
@@ -44,6 +47,11 @@ public static class DependencyInjection
             client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
         });
 
+        services.AddScoped<ICompetenceRepository, CompetenceRepository>();
+        services.AddScoped<IUserCompetenceRepository, UserCompetenceRepository>();
+
+        services.Configure<StripeSettings>(configuration.GetSection(StripeSettings.SectionName));
+        services.AddScoped<ISubscriptionService, StripeSubscriptionService>();
         return services;
 
     }

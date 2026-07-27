@@ -13,5 +13,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Firstname).HasMaxLength(50);
         builder.Property(u => u.Lastname).HasMaxLength(50);
         builder.Property(u => u.PasswordHash).HasMaxLength(500);
+
+        builder.HasIndex(u => u.StripeCustomerId)
+            .IsUnique()
+            .HasFilter("[StripeCustomerId] IS NOT NULL");
     }
 }

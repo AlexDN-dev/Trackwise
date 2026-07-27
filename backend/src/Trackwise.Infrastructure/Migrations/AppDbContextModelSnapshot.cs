@@ -113,6 +113,10 @@ namespace Trackwise.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
                     b.ToTable("Competences");
                 });
 
@@ -230,8 +234,17 @@ namespace Trackwise.Infrastructure.Migrations
                     b.Property<byte>("PlanType")
                         .HasColumnType("tinyint");
 
+                    b.Property<DateTimeOffset?>("PremiumUntil")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<byte>("Role")
                         .HasColumnType("tinyint");
+
+                    b.Property<string>("StripeCustomerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("StripeSubscriptionId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
@@ -241,7 +254,31 @@ namespace Trackwise.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("StripeCustomerId")
+                        .IsUnique()
+                        .HasFilter("[StripeCustomerId] IS NOT NULL");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Trackwise.Domain.Entities.UserCompetence", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CompetenceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("UserId", "CompetenceId");
+
+                    b.HasIndex("CompetenceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserCompetences");
                 });
 
             modelBuilder.Entity("CandidatureCompetence", b =>
@@ -289,6 +326,25 @@ namespace Trackwise.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Trackwise.Domain.Entities.UserCompetence", b =>
+                {
+                    b.HasOne("Trackwise.Domain.Entities.Competence", "Competence")
+                        .WithMany()
+                        .HasForeignKey("CompetenceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Trackwise.Domain.Entities.User", "User")
+                        .WithMany("UserCompetences")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Competence");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Trackwise.Domain.Entities.Entreprise", b =>
                 {
                     b.Navigation("Candidatures");
@@ -299,6 +355,8 @@ namespace Trackwise.Infrastructure.Migrations
                     b.Navigation("Candidatures");
 
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("UserCompetences");
                 });
 #pragma warning restore 612, 618
         }
