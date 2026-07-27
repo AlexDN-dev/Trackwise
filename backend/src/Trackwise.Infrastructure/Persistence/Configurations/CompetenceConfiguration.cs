@@ -10,5 +10,9 @@ public class CompetenceConfiguration : IEntityTypeConfiguration<Competence>
     {
         builder.Property(c => c.Name).HasMaxLength(100);
         builder.Property(c => c.NormalizedName).HasMaxLength(100);
+
+        builder.HasIndex(c => c.NormalizedName)
+            .IsUnique()
+            .HasFilter("[NormalizedName] IS NOT NULL");
     }
 }
