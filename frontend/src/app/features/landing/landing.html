@@ -13,8 +13,12 @@
       <a class="nav-a" href="#pricing">Tarifs</a>
     </div>
     <div class="nav-r">
-      <a class="nav-signin" routerLink="/auth">Se connecter</a>
-      <a class="btn btn-p btn-sm" routerLink="/auth">Commencer gratuitement</a>
+      @if (isAuthenticated()) {
+        <a class="btn btn-p btn-sm" routerLink="/candidatures">Ouvrir mon tableau</a>
+      } @else {
+        <a class="nav-signin" routerLink="/auth">Se connecter</a>
+        <a class="btn btn-p btn-sm" routerLink="/auth">Commencer gratuitement</a>
+      }
     </div>
   </div>
 </nav>
@@ -29,15 +33,21 @@
   <h1 class="h1">Organisez votre recherche d'emploi. <span class="grad">Décrochez plus vite.</span></h1>
   <p class="lead">Trackwise réunit toutes vos candidatures dans un tableau clair, analyse les offres avec l'IA et vous montre exactement où concentrer vos efforts.</p>
   <div class="hero-cta">
-    <a class="btn btn-p" routerLink="/auth">Commencer gratuitement</a>
+    @if (isAuthenticated()) {
+      <a class="btn btn-p" routerLink="/candidatures">Ouvrir mon tableau</a>
+    } @else {
+      <a class="btn btn-p" routerLink="/auth">Commencer gratuitement</a>
+    }
     <a class="btn btn-g" href="#demo">Voir la démo</a>
   </div>
-  <div class="hero-note">
-    <svg width="15" height="15" viewBox="0 0 16 16">
-      <path d="M3 8.5l3 3L13 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
-    </svg>
-    Gratuit pour toujours · Aucune carte bancaire requise
-  </div>
+  @if (!isAuthenticated()) {
+    <div class="hero-note">
+      <svg width="15" height="15" viewBox="0 0 16 16">
+        <path d="M3 8.5l3 3L13 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+      </svg>
+      Gratuit pour toujours · Aucune carte bancaire requise
+    </div>
+  }
   <div class="hero-stage" id="demo">
     <div class="hero-glow">
       <div class="tilt">
@@ -226,7 +236,11 @@
         <li><span class="pl-check pl-free"><svg width="11" height="11" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3L9.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg></span>Analyse IA (5 offres / mois)</li>
         <li><span class="pl-check pl-free"><svg width="11" height="11" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3L9.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg></span>Score de compatibilité</li>
       </ul>
-      <a class="btn btn-g plan-cta" routerLink="/auth">Commencer</a>
+      @if (isAuthenticated()) {
+        <a class="btn btn-g plan-cta" routerLink="/candidatures">Ouvrir mon tableau</a>
+      } @else {
+        <a class="btn btn-g plan-cta" routerLink="/auth">Commencer</a>
+      }
     </div>
     <div class="plan plan-pro">
       <span class="plan-badge">Populaire</span>
@@ -244,7 +258,11 @@
         <li><span class="pl-check pl-pro"><svg width="11" height="11" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3L9.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg></span>Historique complet &amp; export</li>
         <li><span class="pl-check pl-pro"><svg width="11" height="11" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3L9.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg></span>Support prioritaire</li>
       </ul>
-      <a class="btn btn-p plan-cta" routerLink="/auth">Passer au Premium</a>
+      @if (isAuthenticated()) {
+        <a class="btn btn-p plan-cta" routerLink="/profil/abonnement">Passer au Premium</a>
+      } @else {
+        <a class="btn btn-p plan-cta" routerLink="/auth">Passer au Premium</a>
+      }
     </div>
   </div>
 </section>
@@ -253,7 +271,11 @@
   <div class="cta reveal">
     <h2>Prêt à décrocher votre prochain poste ?</h2>
     <p class="cta-sub">Rejoignez les développeurs qui structurent leur recherche et postulent avec méthode grâce à Trackwise.</p>
-    <a class="btn btn-w" routerLink="/auth">Commencer gratuitement</a>
+    @if (isAuthenticated()) {
+      <a class="btn btn-w" routerLink="/candidatures">Ouvrir mon tableau</a>
+    } @else {
+      <a class="btn btn-w" routerLink="/auth">Commencer gratuitement</a>
+    }
   </div>
 </div>
 
@@ -275,7 +297,11 @@
         <a href="#features">Fonctionnalités</a>
         <a href="#pricing">Tarifs</a>
         <a href="#demo">Démo</a>
-        <a routerLink="/auth">Ouvrir l'app</a>
+        @if (isAuthenticated()) {
+          <a routerLink="/candidatures">Ouvrir l'app</a>
+        } @else {
+          <a routerLink="/auth">Ouvrir l'app</a>
+        }
       </div>
     </div>
     <div>

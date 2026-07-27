@@ -45,6 +45,14 @@ export class Kanban {
   readonly pendingDelete = signal<CandidatureResponse | null>(null);
   readonly aiPrefill = signal<AnalysisResult | null>(null);
   readonly searchQuery = signal('');
+  readonly mobileMenuOpen = signal(false);
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen.update((v) => !v);
+  }
+  closeMobileMenu(): void {
+    this.mobileMenuOpen.set(false);
+  }
 
   readonly filteredCandidatures = computed(() => {
     const tokens = this.norm(this.searchQuery()).split(/\s+/).filter(Boolean);

@@ -96,6 +96,113 @@
 
 .modal-error { color: #dc4d6f; font-size: 12.5px; margin: 0 0 10px; }
 
+/* Compétences : typeahead + chips */
+.skill-input-wrap { position: relative; }
+.skill-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 42px;
+  padding: 0 12px;
+  background: #fbfbfd;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink3);
+  transition: .16s;
+}
+.skill-input:focus-within {
+  background: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 13%, transparent);
+  color: var(--accent);
+}
+.skill-fld {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+.skill-drop {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  box-shadow: 0 16px 32px -18px rgba(22, 23, 50, .3);
+  padding: 5px;
+  z-index: 20;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.skill-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 11px;
+  border: none;
+  background: none;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+.skill-item:hover { background: var(--line2); }
+.skill-item-name { flex: 1; font-weight: 600; }
+.skill-item-hint { font-size: 11px; color: var(--ink3); font-weight: 600; }
+.skill-create { color: var(--accent-d); }
+.skill-create:hover { background: var(--accent-soft); }
+.skill-create .skill-item-ic {
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.skill-chips {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 5px 5px 10px;
+  height: 28px;
+  background: var(--accent-soft);
+  color: var(--accent-d);
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  animation: skchip .18s ease;
+}
+@keyframes skchip {
+  from { opacity: 0; transform: scale(.85); }
+  to { opacity: 1; transform: none; }
+}
+.skill-chip-x {
+  width: 18px; height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent-d);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: .14s;
+}
+.skill-chip-x:hover { background: var(--accent); color: #fff; }
+
 /* Footer */
 .mfoot {
   display: flex; justify-content: flex-end; gap: 10px;

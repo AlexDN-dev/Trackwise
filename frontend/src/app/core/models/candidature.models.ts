@@ -1,4 +1,6 @@
-export enum CandidatureStatus{
+import { CompetenceResponse } from './competence.models';
+
+export enum CandidatureStatus {
   ToSend = 1,
   Sent = 2,
   GotInterview = 3,
@@ -24,6 +26,9 @@ export interface CandidatureResponse {
   createdAt: string | null;
   entrepriseId: string;
   entrepriseName: string | null;
+  competences: CompetenceResponse[];
+  score: number | null;
+  missingCompetences: string[];
 }
 
 export interface CreateCandidatureRequest {
@@ -35,6 +40,7 @@ export interface CreateCandidatureRequest {
   postulationDate?: string | null;
   entrepriseId?: string | null;
   entrepriseName?: string | null;
+  competences?: string[] | null;
 }
 
 export interface UpdateCandidatureRequest {
@@ -46,6 +52,7 @@ export interface UpdateCandidatureRequest {
   status: CandidatureStatus;
   postulationDate?: string | null;
   entrepriseId: string;
+  competences?: string[] | null;
 }
 
 export interface EntrepriseResponse {

@@ -1,21 +1,26 @@
 import {
   Component,
   computed,
+  ElementRef,
   inject,
   input,
   OnInit,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs';
 import { CandidatureService } from '../../../../core/services/candidature.service';
 import { CandidatureResponse, ContractType } from '../../../../core/models/candidature.models';
 import { AiAnalysisService } from '../../../../core/services/ai-analysis.service';
 import { AnalysisResult } from '../../../../core/models/ai.models';
+import { CompetenceService } from '../../../../core/services/competence.service';
+import { CompetenceResponse } from '../../../../core/models/competence.models';
 
 @Component({
   selector: 'app-candidature-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FormsModule],
   templateUrl: './candidature-modal.html',
   styleUrl: './candidature-modal.css',
 })
@@ -23,6 +28,8 @@ export class CandidatureModal implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly candidatureService = inject(CandidatureService);
   private readonly aiService = inject(AiAnalysisService);
+  private readonly competenceService = inject(CompetenceService);
+  private readonly skillInputRef = viewChild<ElementRef<HTMLInputElement>>('skillInput');
 
   readonly prefill = input<AnalysisResult | null>(null);
   readonly isPrefill = computed(() => this.prefill() !== null);
@@ -39,6 +46,26 @@ export class CandidatureModal implements OnInit {
   readonly mode = signal<'manual' | 'ai'>('manual');
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
+
+  readonly competences = signal<string[]>([]);
+  readonly skillQuery = signal('');
+  readonly skillSuggestions = signal<CompetenceResponse[]>([]);
+  readonly skillDropdownOpen = signal(false);
+
+  private readonly skillQuerySubject = new Subject<string>();
+
+  private norm(s: string): string {
+    return s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  }
+
+  readonly canCreateSkill = computed(() => {
+    const q = this.skillQuery().trim();
+    if (!q) return false;
+    const qn = this.norm(q);
+    const owned = new Set(this.competences().map((c) => this.norm(c)));
+    if (owned.has(qn)) return false;
+    return !this.skillSuggestions().some((s) => this.norm(s.name) === qn);
+  });
 
   readonly contractTypes = [
     { value: ContractType.CDI, label: 'CDI' },
@@ -68,6 +95,7 @@ export class CandidatureModal implements OnInit {
         urlOffer: existing.urlOffer ?? '',
         description: existing.description ?? '',
       });
+      this.competences.set(existing.competences?.map((c) => c.name) ?? []);
     } else if (prefill) {
       this.form.patchValue({
         title: prefill.title ?? '',
@@ -77,7 +105,21 @@ export class CandidatureModal implements OnInit {
         urlOffer: prefill.urlOffer ?? '',
         description: prefill.description ?? '',
       });
+      this.competences.set(prefill.competences ?? []);
     }
+
+    this.skillQuerySubject
+      .pipe(
+        debounceTime(150),
+        distinctUntilChanged(),
+        switchMap((term) => (term.trim() ? this.competenceService.search(term.trim()) : of([]))),
+      )
+      .subscribe({
+        next: (results) => {
+          const owned = new Set(this.competences().map((c) => this.norm(c)));
+          this.skillSuggestions.set(results.filter((r) => !owned.has(this.norm(r.name))));
+        },
+      });
   }
 
   setMode(mode: 'manual' | 'ai'): void {
@@ -89,11 +131,45 @@ export class CandidatureModal implements OnInit {
     if (event.target === event.currentTarget) this.close.emit();
   }
 
-  analyzeAi() : void {
-    if(!this.canAnalyze()) return;
+  analyzeAi(): void {
+    if (!this.canAnalyze()) return;
     this.aiService.analyze(this.aiText().trim());
     this.aiText.set('');
     this.close.emit();
+  }
+
+  onSkillQueryChange(value: string): void {
+    this.skillQuery.set(value);
+    this.skillQuerySubject.next(value);
+  }
+
+  addSkill(name: string): void {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const n = this.norm(trimmed);
+    if (this.competences().some((c) => this.norm(c) === n)) return;
+    this.competences.update((list) => [...list, trimmed]);
+    this.skillQuery.set('');
+    this.skillSuggestions.set([]);
+    this.skillInputRef()?.nativeElement.focus();
+  }
+
+  removeSkill(name: string): void {
+    this.competences.update((list) => list.filter((c) => c !== name));
+  }
+
+  onSkillFocus(): void {
+    this.skillDropdownOpen.set(true);
+  }
+
+  onSkillBlur(): void {
+    setTimeout(() => this.skillDropdownOpen.set(false), 150);
+  }
+
+  onSkillEnter(): void {
+    const first = this.skillSuggestions()[0];
+    if (first) this.addSkill(first.name);
+    else if (this.canCreateSkill()) this.addSkill(this.skillQuery());
   }
 
   submit(): void {
@@ -106,6 +182,7 @@ export class CandidatureModal implements OnInit {
 
     const raw = this.form.getRawValue();
     const existing = this.existing();
+    const competences = this.competences();
 
     const request$ = existing
       ? this.candidatureService.update(existing.id, {
@@ -117,6 +194,7 @@ export class CandidatureModal implements OnInit {
           status: existing.status,
           postulationDate: existing.postulationDate,
           entrepriseId: existing.entrepriseId,
+          competences,
         })
       : this.candidatureService.create({
           title: raw.title,
@@ -125,6 +203,7 @@ export class CandidatureModal implements OnInit {
           contractType: raw.contractType,
           urlOffer: raw.urlOffer || null,
           description: raw.description || null,
+          competences,
         });
 
     request$.subscribe({

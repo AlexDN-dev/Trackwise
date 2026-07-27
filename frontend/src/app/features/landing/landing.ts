@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-landing',
@@ -9,6 +10,8 @@ import { RouterLink } from '@angular/router';
 })
 export class Landing implements AfterViewInit, OnDestroy {
   private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
+  private readonly auth = inject(AuthService);
+  readonly isAuthenticated = this.auth.isAuthenticated;
   private observer?: IntersectionObserver;
 
   ngAfterViewInit(): void {

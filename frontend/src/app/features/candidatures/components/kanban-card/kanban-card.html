@@ -1,7 +1,7 @@
 <div class="kc-top">
   <div class="klogo" [class]="logoCls()">{{ initial() }}</div>
   <div class="kc-right">
-    <div class="score sc-none">50%</div>
+    <div class="score" [class]="scoreClass()" [title]="scoreTooltip()">{{ scoreDisplay() }}</div>
     <button class="kmenu-btn" type="button" (click)="toggleMenu($event)" title="Menu">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
         <circle cx="8" cy="3" r="1.4"></circle>
@@ -10,8 +10,8 @@
       </svg>
     </button>
 
-    @if (menuOpen()) {
-      <div class="card-menu">
+    @if (menuOpen() && menuPos(); as pos) {
+      <div class="card-menu" [style.top.px]="pos.top" [style.left.px]="pos.left">
         <button type="button" class="cmi" (click)="onEdit($event)">
           <svg width="15" height="15" viewBox="0 0 18 18" fill="none">
             <path d="M12.5 2.5l3 3L6 15l-3.5.5L3 12l9.5-9.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path>

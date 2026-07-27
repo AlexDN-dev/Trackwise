@@ -86,6 +86,69 @@
             <textarea id="c-notes" class="minput mtext" rows="3" formControlName="description" placeholder="Ajouter des notes…"></textarea>
           </div>
 
+          <div class="mfield">
+            <label class="mlabel" for="c-skills">Compétences requises</label>
+            <div class="skill-input-wrap">
+              <div class="skill-input">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                  <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"></circle>
+                  <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+                </svg>
+                <input
+                  #skillInput
+                  id="c-skills"
+                  type="text"
+                  class="skill-fld"
+                  placeholder="Ex. React, PostgreSQL, Docker…"
+                  autocomplete="off"
+                  [ngModel]="skillQuery()"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="onSkillQueryChange($event)"
+                  (focus)="onSkillFocus()"
+                  (blur)="onSkillBlur()"
+                  (keydown.enter)="$event.preventDefault(); onSkillEnter()"
+                  (keydown.escape)="onSkillQueryChange(''); $any($event.target).blur()"
+                />
+              </div>
+
+              @if (skillDropdownOpen() && skillQuery().trim().length > 0 && (skillSuggestions().length > 0 || canCreateSkill())) {
+                <div class="skill-drop">
+                  @for (s of skillSuggestions(); track s.id) {
+                    <button type="button" class="skill-item" (mousedown)="addSkill(s.name)">
+                      <span class="skill-item-name">{{ s.name }}</span>
+                      <span class="skill-item-hint">Ajouter</span>
+                    </button>
+                  }
+                  @if (canCreateSkill()) {
+                    <button type="button" class="skill-item skill-create" (mousedown)="addSkill(skillQuery())">
+                      <span class="skill-item-ic">
+                        <svg width="12" height="12" viewBox="0 0 16 16">
+                          <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path>
+                        </svg>
+                      </span>
+                      <span class="skill-item-name">Créer « {{ skillQuery().trim() }} »</span>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+
+            @if (competences().length > 0) {
+              <div class="skill-chips">
+                @for (name of competences(); track name) {
+                  <span class="skill-chip">
+                    {{ name }}
+                    <button type="button" class="skill-chip-x" (click)="removeSkill(name)" [attr.aria-label]="'Retirer ' + name">
+                      <svg width="10" height="10" viewBox="0 0 10 10">
+                        <path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                      </svg>
+                    </button>
+                  </span>
+                }
+              </div>
+            }
+          </div>
+
           @if (errorMessage()) {
             <p class="modal-error">{{ errorMessage() }}</p>
           }

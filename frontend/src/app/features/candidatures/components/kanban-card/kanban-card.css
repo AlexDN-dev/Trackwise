@@ -12,7 +12,6 @@
 :host(:hover) {
   box-shadow: 0 8px 22px -12px rgba(28, 30, 60, .28);
   border-color: #dcdfe8;
-  transform: translateY(-1px);
 }
 :host(:active) { cursor: grabbing; }
 
@@ -52,6 +51,10 @@
   letter-spacing: -.01em;
 }
 .sc-none { color: var(--ink2); background: var(--line2); }
+.sc-hi { color: #0f8556; background: #e8f8f0; }
+.sc-mid { color: var(--accent-d); background: var(--accent-soft); }
+.sc-lo { color: var(--ink2); background: var(--line2); }
+.score { cursor: help; }
 
 .kmenu-btn {
   width: 26px;
@@ -98,10 +101,8 @@
 
 /* --- Menu 3-points --- */
 .card-menu {
-  position: absolute;
-  top: 42px;
-  right: 8px;
-  z-index: 10;
+  position: fixed;
+  z-index: 1000;
   width: 168px;
   background: #fff;
   border: 1px solid var(--line);

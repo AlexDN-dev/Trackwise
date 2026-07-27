@@ -4,7 +4,30 @@
     <p class="ph-s">Gérez votre plan et débloquez toutes les fonctionnalités de Trackwise.</p>
   </header>
 
-  @if (isFree()) {
+  @if (showSuccessBanner()) {
+    <div class="alert alert-ok">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M6.5 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Bienvenue dans Premium ! Toutes les fonctionnalités sont débloquées.
+    </div>
+  }
+  @if (errorMessage(); as msg) {
+    <div class="alert alert-err">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M10 6v5M10 14v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      {{ msg }}
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="plan">
+      <div class="page-loading">Chargement…</div>
+    </div>
+  } @else if (isFree()) {
     <!-- Plan actuel : Free -->
     <div class="plan plan-current">
       <div class="plan-hd">
@@ -68,11 +91,15 @@
         }
       </ul>
 
-      <button type="button" class="btn-upgrade" (click)="upgrade()">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-          <path d="M2 5.5l2.5 6.5h7L14 5.5l-3 2.5L8 3.5 5 8 2 5.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-        </svg>
-        Passer à Premium
+      <button type="button" class="btn-upgrade" [disabled]="processing()" (click)="upgrade()">
+        @if (processing()) {
+          <span class="spin"></span> Redirection…
+        } @else {
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+            <path d="M2 5.5l2.5 6.5h7L14 5.5l-3 2.5L8 3.5 5 8 2 5.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+          Passer à Premium
+        }
       </button>
 
       <div class="disclaim">
@@ -92,16 +119,26 @@
           </div>
           <div>
             <div class="plan-name">Premium</div>
-            <div class="plan-price">
-              6 € / mois
-              @if (premiumUntil(); as until) {
-                <span class="price-sub">· Prochain paiement le {{ until }}</span>
-              }
-            </div>
+            <div class="plan-price">6 € / mois</div>
           </div>
         </div>
         <span class="plan-tag plan-tag-active">Actif</span>
       </div>
+
+      @if (premiumUntilFmt(); as until) {
+        <div class="renew-info">
+          <div class="renew-ic">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="4.5" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M3 8h14M7 3v3M13 3v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="renew-body">
+            <div class="renew-lbl">Prochain paiement</div>
+            <div class="renew-val">{{ until }}</div>
+          </div>
+        </div>
+      }
 
       <ul class="feats feats-premium">
         @for (f of premiumFeatures; track f) {
@@ -115,10 +152,13 @@
       </ul>
 
       <div class="plan-actions">
-        <button type="button" class="btn-g" (click)="manage()">
-          Gérer mon abonnement
+        <button type="button" class="btn-g" [disabled]="processing()" (click)="manage()">
+          @if (processing()) {
+            <span class="spin spin-dark"></span> Redirection…
+          } @else {
+            Gérer mon abonnement
+          }
         </button>
-        <button type="button" class="btn-ghost">Résilier</button>
       </div>
     </div>
   }

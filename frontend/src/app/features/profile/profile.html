@@ -1,19 +1,31 @@
 <div class="app">
   <!-- HEADER (identique au kanban, "Paramètres" actif) -->
   <header class="hdr">
-    <div class="hbrand">
+    <a class="hbrand" routerLink="/" (click)="closeMobileMenu()">
       <svg class="mk" viewBox="0 0 32 32">
         <rect width="32" height="32" rx="9" fill="var(--accent)"></rect>
         <path d="M9 17.2l4.4 4.4L23 10.8" stroke="#fff" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
       </svg>
       <span class="wm">Trackwise</span>
-    </div>
+    </a>
 
-    <nav class="nav">
-      <button type="button" class="navlink" routerLink="/candidatures">Tableau</button>
-      <button type="button" class="navlink">Statistiques</button>
-      <button type="button" class="navlink">Documents</button>
-      <button type="button" class="navlink on">Paramètres</button>
+    <button type="button" class="burger" (click)="toggleMobileMenu()" [class.on]="mobileMenuOpen()" aria-label="Menu">
+      @if (mobileMenuOpen()) {
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      } @else {
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      }
+    </button>
+
+    <nav class="nav" [class.nav-open]="mobileMenuOpen()">
+      <button type="button" class="navlink" routerLink="/candidatures" (click)="closeMobileMenu()">Tableau</button>
+      <button type="button" class="navlink" (click)="closeMobileMenu()">Statistiques</button>
+      <button type="button" class="navlink" (click)="closeMobileMenu()">Documents</button>
+      <button type="button" class="navlink on" (click)="closeMobileMenu()">Paramètres</button>
     </nav>
 
     <div class="hspace"></div>
@@ -88,7 +100,7 @@
             </svg>
           </span>
           <span class="pnav-t">Abonnement</span>
-          <span class="pnav-badge">Free</span>
+          <span class="pnav-badge" [class.pnav-badge-premium]="isPremium()">{{ planLabel() }}</span>
         </a>
       </nav>
     </aside>

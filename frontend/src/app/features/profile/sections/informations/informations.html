@@ -4,66 +4,75 @@
     <p class="ph-s">Ces informations apparaissent sur votre compte et vos candidatures.</p>
   </header>
 
-  <div class="card">
-    <div class="identity">
-      <div class="idavatar">{{ initials().toUpperCase() }}</div>
-      <div class="idmeta">
-        <div class="idname">{{ displayName() || 'Sans nom' }}</div>
-        <div class="idmail">
-          {{ email() }}
-          @if (!emailConfirmed()) {
-            <span class="pill pill-warn">Non vérifié</span>
-          } @else {
-            <span class="pill pill-ok">Vérifié</span>
-          }
+  @if (errorMessage(); as msg) {
+    <div class="alert alert-err">{{ msg }}</div>
+  }
+
+  @if (loading()) {
+    <div class="card">
+      <div class="page-loading">Chargement…</div>
+    </div>
+  } @else {
+    <div class="card">
+      <div class="identity">
+        <div class="idavatar">{{ initials() }}</div>
+        <div class="idmeta">
+          <div class="idname">{{ displayName() || 'Sans nom' }}</div>
+          <div class="idmail">{{ email() }}</div>
+          <div class="idmember">Membre depuis {{ memberSince() }}</div>
         </div>
-        <div class="idmember">Membre depuis {{ memberSince() }}</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="csect">
-      <label class="lbl" for="displayName">Nom d'affichage</label>
-      <input
-        id="displayName"
-        type="text"
-        class="fld"
-        maxlength="50"
-        [ngModel]="displayName()"
-        (ngModelChange)="displayName.set($event)"
-        placeholder="Votre nom complet"
-      />
-      <div class="hint">
-        Utilisé dans votre avatar et vos exports. 50 caractères max.
       </div>
     </div>
 
-    <div class="csect">
-      <label class="lbl" for="email">Adresse e-mail</label>
-      <input
-        id="email"
-        type="email"
-        class="fld fld-ro"
-        [value]="email()"
-        readonly
-      />
-      <div class="hint">
-        Pour changer votre e-mail, contactez le support. Cette action nécessitera une re-vérification.
+    <div class="card">
+      <div class="csect">
+        <div class="row2">
+          <div>
+            <label class="lbl" for="firstname">Prénom</label>
+            <input
+              id="firstname"
+              type="text"
+              class="fld"
+              maxlength="100"
+              [ngModel]="firstname()"
+              (ngModelChange)="firstname.set($event)"
+            />
+          </div>
+          <div>
+            <label class="lbl" for="lastname">Nom</label>
+            <input
+              id="lastname"
+              type="text"
+              class="fld"
+              maxlength="100"
+              [ngModel]="lastname()"
+              (ngModelChange)="lastname.set($event)"
+            />
+          </div>
+        </div>
+        <div class="hint">Utilisés dans votre avatar et vos exports. 100 caractères max chacun.</div>
+      </div>
+
+      <div class="csect">
+        <label class="lbl" for="email">Adresse e-mail</label>
+        <input id="email" type="email" class="fld fld-ro" [value]="email()" readonly />
+        <div class="hint">
+          Pour changer votre e-mail, contactez le support. Cette action nécessitera une re-vérification.
+        </div>
+      </div>
+
+      <div class="cfoot">
+        <button type="button" class="btn-g" (click)="reset()" [disabled]="!hasChanges() || saving()">
+          Annuler
+        </button>
+        <button type="button" class="btn-p" (click)="save()" [disabled]="!hasChanges() || saving()">
+          @if (saving()) {
+            <span class="spin"></span> Enregistrement…
+          } @else {
+            Enregistrer
+          }
+        </button>
       </div>
     </div>
-
-    <div class="cfoot">
-      <button type="button" class="btn-g" (click)="reset()" [disabled]="!hasChanges() || saving()">
-        Annuler
-      </button>
-      <button type="button" class="btn-p" (click)="save()" [disabled]="!hasChanges() || saving()">
-        @if (saving()) {
-          <span class="spin"></span> Enregistrement…
-        } @else {
-          Enregistrer
-        }
-      </button>
-    </div>
-  </div>
+  }
 </div>

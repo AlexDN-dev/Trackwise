@@ -1,5 +1,6 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { UserService } from '../../../../core/services/user.service';
 
 @Component({
   selector: 'app-profile-informations',
@@ -7,33 +8,76 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './informations.html',
   styleUrl: './informations.css',
 })
-export class ProfileInformations {
-  // Placeholders — à brancher sur GET /api/users/me
-  readonly email = signal('marie.dupont@exemple.fr');
-  readonly emailConfirmed = signal(false);
-  readonly memberSince = signal('juillet 2026');
+export class ProfileInformations implements OnInit {
+  private readonly userService = inject(UserService);
 
-  readonly initialDisplayName = signal('Marie Dupont');
-  readonly displayName = signal('Marie Dupont');
+  readonly firstname = signal('');
+  readonly lastname = signal('');
+  readonly email = signal('');
+  readonly memberSince = signal('');
 
-  readonly initials = computed(() => {
-    const parts = this.displayName().trim().split(/\s+/);
-    return (parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '');
-  });
+  private initialFirstname = '';
+  private initialLastname = '';
 
-  readonly hasChanges = computed(() => this.displayName().trim() !== this.initialDisplayName());
+  readonly initials = computed(
+    () => ((this.firstname()[0] ?? '') + (this.lastname()[0] ?? '')).toUpperCase() || '?',
+  );
+  readonly displayName = computed(() => `${this.firstname()} ${this.lastname()}`.trim());
+
+  readonly hasChanges = computed(
+    () =>
+      this.firstname().trim() !== this.initialFirstname ||
+      this.lastname().trim() !== this.initialLastname,
+  );
+
+  readonly loading = signal(true);
   readonly saving = signal(false);
+  readonly errorMessage = signal<string | null>(null);
+
+  ngOnInit(): void {
+    this.userService.getMe().subscribe({
+      next: (user) => {
+        this.firstname.set(user.firstname);
+        this.lastname.set(user.lastname);
+        this.email.set(user.email);
+        this.initialFirstname = user.firstname;
+        this.initialLastname = user.lastname;
+        this.memberSince.set(
+          new Date(user.createdAt).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }),
+        );
+        this.loading.set(false);
+      },
+      error: () => {
+        this.errorMessage.set('Impossible de charger votre profil.');
+        this.loading.set(false);
+      },
+    });
+  }
 
   save(): void {
-    // À brancher sur PATCH /api/users/me
+    if (!this.hasChanges() || this.saving()) return;
     this.saving.set(true);
-    setTimeout(() => {
-      this.initialDisplayName.set(this.displayName().trim());
-      this.saving.set(false);
-    }, 400);
+    this.errorMessage.set(null);
+
+    this.userService
+      .update({ firstname: this.firstname().trim(), lastname: this.lastname().trim() })
+      .subscribe({
+        next: (user) => {
+          this.firstname.set(user.firstname);
+          this.lastname.set(user.lastname);
+          this.initialFirstname = user.firstname;
+          this.initialLastname = user.lastname;
+          this.saving.set(false);
+        },
+        error: () => {
+          this.errorMessage.set('Erreur lors de la sauvegarde.');
+          this.saving.set(false);
+        },
+      });
   }
 
   reset(): void {
-    this.displayName.set(this.initialDisplayName());
+    this.firstname.set(this.initialFirstname);
+    this.lastname.set(this.initialLastname);
   }
 }
