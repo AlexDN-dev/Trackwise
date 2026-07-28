@@ -35,4 +35,15 @@ public class UsersController : ControllerBase
         var response = await _service.UpdateAsync(userId, request, cancellationToken);
         return response is null ? NotFound() : Ok(response);
     }
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword(
+        [FromBody] ChangePasswordRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        var ok = await _service.ChangePasswordAsync(userId, request, cancellationToken);
+        return ok
+            ? NoContent()
+            : BadRequest(new { message = "Mot de passe actuel incorrect." });
+    }
 }

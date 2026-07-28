@@ -217,7 +217,6 @@ export class Kanban {
   }
 
   logout(): void {
-    this.auth.logout();
-    this.router.navigate(['/auth']);
+    this.auth.logout().subscribe(() => this.router.navigate(['/auth']),)
   }
 }

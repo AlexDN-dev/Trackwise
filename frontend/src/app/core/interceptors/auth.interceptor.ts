@@ -24,7 +24,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             next(req.clone({ setHeaders: { Authorization: `Bearer ${res.accessToken}` } })),
           ),
           catchError((refreshErr) => {
-            auth.logout();
+            auth.logout().subscribe();
             router.navigate(['/auth']);
             return throwError(() => refreshErr);
           }),

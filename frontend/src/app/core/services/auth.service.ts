@@ -1,55 +1,64 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, catchError, finalize, firstValueFrom, of, shareReplay, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { RegisterRequest, LoginRequest, AuthResponse } from '../models/auth.models';
-
-const ACCESS_KEY = 'trackwise_access';
-const REFRESH_KEY = 'trackwise_refresh';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/auth`;
 
-  private readonly accessToken = signal<string | null>(localStorage.getItem(ACCESS_KEY));
+  private readonly accessToken = signal<string | null>(null);
   readonly isAuthenticated = computed(() => this.accessToken() !== null);
 
-  register(request: RegisterRequest): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(`${this.baseUrl}/register`, request)
-      .pipe(tap((res) => this.storeTokens(res)));
+  private refreshInFlight: Observable<AuthResponse> | null = null;
+
+  register(request: RegisterRequest): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/register`, request);
   }
 
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${this.baseUrl}/login`, request)
-      .pipe(tap((res) => this.storeTokens(res)));
+      .post<AuthResponse>(`${this.baseUrl}/login`, request, { withCredentials: true })
+      .pipe(tap((res) => this.accessToken.set(res.accessToken)));
   }
 
-  logout(): void {
-    localStorage.removeItem(ACCESS_KEY);
-    localStorage.removeItem(REFRESH_KEY);
-    this.accessToken.set(null);
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/logout`, null, { withCredentials: true }).pipe(
+      catchError(() => of(void 0)),
+      finalize(() => this.clearLocal()),
+    );
   }
 
   refresh(): Observable<AuthResponse> {
-    const refreshToken = this.getRefreshToken();
-    return this.http.post<AuthResponse>(`${this.baseUrl}/refresh`, { refreshToken })
-      .pipe(tap(res => this.storeTokens(res)));
+    if (this.refreshInFlight) return this.refreshInFlight;
+
+    this.refreshInFlight = this.http
+      .post<AuthResponse>(`${this.baseUrl}/refresh`, null, { withCredentials: true })
+      .pipe(
+        tap((res) => this.accessToken.set(res.accessToken)),
+        finalize(() => (this.refreshInFlight = null)),
+        shareReplay({ bufferSize: 1, refCount: true }),
+      );
+
+    return this.refreshInFlight;
+  }
+
+  async tryRestoreSession(): Promise<void> {
+    try {
+      await firstValueFrom(this.refresh());
+    } catch {
+      this.accessToken.set(null);
+    }
   }
 
   getAccessToken(): string | null {
     return this.accessToken();
   }
 
-  getRefreshToken(): string | null {
-    return localStorage.getItem(REFRESH_KEY);
-  }
-
-  private storeTokens(res: AuthResponse): void {
-    localStorage.setItem(ACCESS_KEY, res.accessToken);
-    localStorage.setItem(REFRESH_KEY, res.refreshToken);
-    this.accessToken.set(res.accessToken);
+  private clearLocal(): void {
+    this.accessToken.set(null);
+    this.refreshInFlight = null;
   }
 }

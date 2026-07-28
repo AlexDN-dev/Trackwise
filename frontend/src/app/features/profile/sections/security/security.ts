@@ -1,5 +1,9 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../../../core/services/toast.service';
+import { UserService } from '../../../../core/services/user.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile-security',
@@ -8,6 +12,11 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './security.css',
 })
 export class ProfileSecurity {
+  private readonly userService = inject(UserService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly toastService = inject(ToastService);
+
   readonly currentPassword = signal('');
   readonly newPassword = signal('');
   readonly confirmPassword = signal('');
@@ -59,13 +68,18 @@ export class ProfileSecurity {
     this.saving.set(true);
     this.errorMessage.set(null);
     this.successMessage.set(null);
-    // À brancher sur POST /api/users/me/change-password
-    setTimeout(() => {
-      this.saving.set(false);
-      this.successMessage.set('Mot de passe mis à jour. Vos autres sessions ont été déconnectées.');
-      this.currentPassword.set('');
-      this.newPassword.set('');
-      this.confirmPassword.set('');
-    }, 600);
+
+    this.userService.changePassword(this.currentPassword(), this.newPassword()).subscribe({
+      next: () => {
+        this.toastService.success('Mot de passe mis à jour. Reconnecte-toi pour continuer.');
+        this.authService.logout().subscribe(() => this.router.navigate(['/auth']));
+      },
+      error: (err) => {
+        this.saving.set(false);
+        const msg = err?.error?.message ?? 'Impossible de changer le mot de passe.';
+        this.errorMessage.set(msg);
+        this.toastService.error(msg);
+      },
+    });
   }
 }

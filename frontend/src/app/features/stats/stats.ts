@@ -123,7 +123,20 @@ export class Stats implements OnInit {
     return Math.max(1, ...this.premiumOrFake().scoreDistribution.map((b) => b.count));
   });
 
-  readonly monthLabels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+  readonly monthLabels = [
+    'Jan',
+    'Fév',
+    'Mar',
+    'Avr',
+    'Mai',
+    'Juin',
+    'Juil',
+    'Août',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Déc',
+  ];
 
   monthLabel(m: { year: number; month: number }): string {
     return this.monthLabels[m.month - 1];
@@ -157,8 +170,7 @@ export class Stats implements OnInit {
   }
 
   logout(): void {
-    this.auth.logout();
-    this.router.navigate(['/auth']);
+    this.auth.logout().subscribe(() => this.router.navigate(['/auth']));
   }
 
   toggleMobileMenu(): void {

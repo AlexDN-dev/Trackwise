@@ -30,14 +30,14 @@ public class AuthService : IAuthService
         _logger = logger;
     }
 
-    public async Task<AuthResponse?> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
+    public async Task RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
     {
         var email = Normalize(request.Email);
 
         if (await _userRepository.EmailExistsAsync(email, cancellationToken))
         {
-            _logger.LogWarning("Inscription refusee : email deja utilise {Email}", email);
-            return null;
+            _logger.LogWarning("Tentative d'inscription refusée : email deja utilise {Email}", email);
+            return;
         }
 
         var user = new User
@@ -49,12 +49,9 @@ public class AuthService : IAuthService
         };
 
         _userRepository.Add(user);
-        var response = IssueTokens(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Nouvel utilisateur inscrit {UserId} {Email}", user.Id, email);
-
-        return response;
     }
 
     public async Task<AuthResponse?> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
@@ -134,6 +131,17 @@ public class AuthService : IAuthService
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
+    }
+
+    public async Task RevokeAsync(string refreshToken, CancellationToken cancellationToken = default)
+    {
+        var hashed = _tokenService.HashRefreshToken(refreshToken);
+        var stored = await _refreshTokenRepository.GetByHashedTokenAsync(hashed, cancellationToken);
+        if (stored is null || stored.RevokedAt is not null) return;
+
+        stored.RevokedAt = DateTimeOffset.UtcNow;
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation("Refresh token révoqué pour {UserId}", stored.UserId);
     }
 
     private static string Normalize(string email) => email.Trim().ToLowerInvariant();

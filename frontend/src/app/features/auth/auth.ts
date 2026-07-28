@@ -3,6 +3,10 @@ import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
+
+const UPPERCASE_RE = /.*[A-Z].*/;
+const SYMBOL_RE = /.*[^A-Za-z0-9\s].*/;
 
 @Component({
   selector: 'app-auth',
@@ -14,6 +18,7 @@ export class Auth {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly toastService = inject(ToastService);
 
   readonly isLogin = signal(true);
   readonly loading = signal(false);
@@ -23,10 +28,18 @@ export class Auth {
     firstname: [''],
     lastname: [''],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(100),
+        Validators.pattern(UPPERCASE_RE),
+        Validators.pattern(SYMBOL_RE),
+      ],
+    ],
   });
 
-  // ticke à chaque frappe → recalcul des états dérivés (compatible zoneless)
   private readonly value = toSignal(this.form.valueChanges, {
     initialValue: this.form.getRawValue(),
   });
@@ -61,11 +74,23 @@ export class Auth {
     this.isLogin.set(login);
     this.errorMessage.set(null);
 
-    const req = login ? [] : [Validators.required];
-    this.form.controls.firstname.setValidators(req);
-    this.form.controls.lastname.setValidators(req);
+    const nameValidators = login ? [] : [Validators.required];
+    this.form.controls.firstname.setValidators(nameValidators);
+    this.form.controls.lastname.setValidators(nameValidators);
     this.form.controls.firstname.updateValueAndValidity();
     this.form.controls.lastname.updateValueAndValidity();
+
+    const pwValidators = login
+      ? [Validators.required, Validators.maxLength(100)]
+      : [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.maxLength(100),
+          Validators.pattern(UPPERCASE_RE),
+          Validators.pattern(SYMBOL_RE),
+        ];
+    this.form.controls.password.setValidators(pwValidators);
+    this.form.controls.password.updateValueAndValidity();
   }
 
   submit(): void {
@@ -77,20 +102,28 @@ export class Auth {
     this.errorMessage.set(null);
 
     const { email, password, firstname, lastname } = this.form.getRawValue();
-    const request$ = this.isLogin()
-      ? this.auth.login({ email, password })
-      : this.auth.register({ firstname, lastname, email, password });
 
-    request$.subscribe({
-      next: () => this.router.navigate(['/candidatures']),
-      error: () => {
-        this.loading.set(false);
-        this.errorMessage.set(
-          this.isLogin()
-            ? 'Email ou mot de passe incorrect.'
-            : 'Impossible de créer le compte. Vérifie tes informations.',
-        );
-      },
-    });
+    if (this.isLogin()) {
+      this.auth.login({ email, password }).subscribe({
+        next: () => this.router.navigate(['/candidatures']),
+        error: () => {
+          this.loading.set(false);
+          this.errorMessage.set('Email ou mot de passe incorrect.');
+        },
+      });
+    } else {
+      this.auth.register({ firstname, lastname, email, password }).subscribe({
+        next: () => {
+          this.setMode(true);
+          this.form.controls.password.reset();
+          this.loading.set(false);
+          this.toastService.success('Compte créé. Connecte-toi pour continuer.');
+        },
+        error: () => {
+          this.loading.set(false);
+          this.errorMessage.set('Impossible de créer le compte. Vérifie tes informations.');
+        },
+      });
+    }
   }
 }

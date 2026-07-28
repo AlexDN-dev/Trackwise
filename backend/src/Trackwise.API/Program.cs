@@ -35,6 +35,18 @@ try
     builder.Services.AddOpenApi();
     builder.Services.AddJwtAuthentication(builder.Configuration);
 
+    builder.Services.AddCors(options =>
+    {
+        var allowedOrigins = builder.Configuration
+            .GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
+        options.AddDefaultPolicy(policy => policy
+            .WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+    });
+
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddProblemDetails();
 
@@ -87,6 +99,7 @@ try
 
     var app = builder.Build();
 
+    app.UseMiddleware<SecurityHeadersMiddleware>();
     app.UseSerilogRequestLogging();
     app.UseExceptionHandler();
 
@@ -101,6 +114,7 @@ try
     }
     
     app.UseHttpsRedirection();
+    app.UseCors();
     app.UseAuthentication();
     app.UseAuthorization();
     app.UseRateLimiter();

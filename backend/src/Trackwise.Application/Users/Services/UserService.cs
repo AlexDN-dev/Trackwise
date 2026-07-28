@@ -8,11 +8,19 @@ namespace Trackwise.Application.Users.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IPasswordHasher _passwordHasher;
     private readonly IUnitOfWork _unitOfWork;
 
-    public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public UserService(
+        IUserRepository userRepository,
+        IRefreshTokenRepository refreshTokenRepository,
+        IPasswordHasher passwordHasher,
+        IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
+        _refreshTokenRepository = refreshTokenRepository;
+        _passwordHasher = passwordHasher;
         _unitOfWork = unitOfWork;
     }
 
@@ -33,7 +41,26 @@ public class UserService : IUserService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return ToResponse(user);
     }
-    
+
+    public async Task<bool> ChangePasswordAsync(
+        Guid userId, ChangePasswordRequest request, CancellationToken cancellationToken = default)
+    {
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+        if (user is null) return false;
+
+        if (!_passwordHasher.Verify(request.CurrentPassword, user.PasswordHash))
+            return false;
+
+        user.PasswordHash = _passwordHasher.Hash(request.NewPassword);
+
+        var activeTokens = await _refreshTokenRepository.GetActiveByUserAsync(userId, cancellationToken);
+        foreach (var token in activeTokens)
+            token.RevokedAt = DateTimeOffset.UtcNow;
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
     private static UserResponse ToResponse(User u) => new()
     {
         Id = u.Id,
