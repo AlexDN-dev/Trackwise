@@ -8,6 +8,7 @@ using Trackwise.API.Middleware;
 using Trackwise.Infrastructure;
 using Trackwise.Application;
 using Trackwise.Domain.Enums;
+using Trackwise.API.Logging;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
 
@@ -18,7 +19,8 @@ try
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
-        .Enrich.FromLogContext());
+        .Enrich.FromLogContext()
+        .Enrich.With<RedactionEnricher>());
     
     builder.Services.AddControllers();
     builder.Services.AddAuthorization(options =>
