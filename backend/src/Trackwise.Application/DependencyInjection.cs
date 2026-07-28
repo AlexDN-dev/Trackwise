@@ -9,6 +9,8 @@ using Trackwise.Application.Competences;
 using Trackwise.Application.Competences.Services;
 using Trackwise.Application.Entreprises;
 using Trackwise.Application.Entreprises.Services;
+using Trackwise.Application.Stats;
+using Trackwise.Application.Stats.Services;
 using Trackwise.Application.Users;
 using Trackwise.Application.Users.Services;
 
@@ -28,6 +30,8 @@ public static class DependencyInjection
         services.AddScoped<IUserCompetenceService, UserCompetenceService>();
 
         services.AddScoped<IUserService, UserService>();
+
+        services.AddScoped<IStatsService, StatsService>();
         return services;
     }
 }

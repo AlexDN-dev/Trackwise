@@ -1,0 +1,290 @@
+<div class="app">
+  <header class="hdr">
+    <a class="hbrand" routerLink="/" (click)="closeMobileMenu()">
+      <svg class="mk" viewBox="0 0 32 32">
+        <rect width="32" height="32" rx="9" fill="var(--accent)"></rect>
+        <path d="M9 17.2l4.4 4.4L23 10.8" stroke="#fff" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+      </svg>
+      <span class="wm">Trackwise</span>
+    </a>
+
+    <button type="button" class="burger" (click)="toggleMobileMenu()" [class.on]="mobileMenuOpen()" aria-label="Menu">
+      @if (mobileMenuOpen()) {
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      } @else {
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      }
+    </button>
+
+    <nav class="nav" [class.nav-open]="mobileMenuOpen()">
+      <button type="button" class="navlink" routerLink="/candidatures" (click)="closeMobileMenu()">Tableau</button>
+      <button type="button" class="navlink on" (click)="closeMobileMenu()">Statistiques</button>
+      <button type="button" class="navlink" (click)="closeMobileMenu()">Documents</button>
+      <button type="button" class="navlink" routerLink="/profil" (click)="closeMobileMenu()">Paramètres</button>
+    </nav>
+
+    <div class="hspace"></div>
+
+    <button type="button" class="iconbtn" (click)="logout()" title="Se déconnecter">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+        <path d="M8 3H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M13 7l3 3-3 3M16 10H8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </header>
+
+  <div class="subbar">
+    <span class="pgtitle">Statistiques</span>
+    @if (free()) {
+      <span class="pgcount">{{ free()!.totalCandidatures }} candidature{{ free()!.totalCandidatures > 1 ? 's' : '' }}</span>
+    }
+    <div class="hspace"></div>
+  </div>
+
+  <div class="page">
+    @if (loading()) {
+      <div class="loading">Chargement des statistiques…</div>
+    } @else if (free(); as f) {
+      <!-- KPI cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Total candidatures</div>
+          <div class="kpi-val">{{ f.totalCandidatures }}</div>
+          @if (weekTrend(); as t) {
+            <div class="kpi-trend" [class.kpi-trend-up]="t.sign === '↑'" [class.kpi-trend-down]="t.sign === '↓'">
+              {{ t.sign }} {{ t.value }} cette semaine
+            </div>
+          }
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-lbl">En cours</div>
+          <div class="kpi-val">{{ f.inProgress }}</div>
+          <div class="kpi-sub">À postuler, envoyées, en entretien</div>
+        </div>
+
+        <div class="kpi-card kpi-accent">
+          <div class="kpi-lbl">Entretiens obtenus</div>
+          <div class="kpi-val">{{ f.interviewsObtained }}</div>
+          <div class="kpi-sub">{{ formatRate(f.interviewRate) }} des candidatures envoyées</div>
+        </div>
+
+        <div class="kpi-card kpi-success">
+          <div class="kpi-lbl">Offres reçues</div>
+          <div class="kpi-val">{{ f.positiveResponses }}</div>
+          <div class="kpi-sub">{{ formatRate(f.successRate) }} de réussite</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- Donut : répartition par statut -->
+        <div class="card">
+          <h2 class="card-t">Répartition par statut</h2>
+          @if (donutSegments().length === 0) {
+            <div class="empty-chart">Pas encore de candidatures</div>
+          } @else {
+            <div class="donut-wrap">
+              <svg class="donut" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="60" fill="none" stroke="var(--line)" stroke-width="18"/>
+                @for (seg of donutSegments(); track seg.status) {
+                  <circle
+                    cx="80" cy="80" r="60"
+                    fill="none"
+                    [attr.stroke]="seg.color"
+                    stroke-width="18"
+                    [attr.stroke-dasharray]="seg.dashArray"
+                    [attr.stroke-dashoffset]="seg.dashOffset"
+                    transform="rotate(-90 80 80)"
+                  />
+                }
+                <text x="80" y="76" text-anchor="middle" class="donut-total">{{ f.totalCandidatures }}</text>
+                <text x="80" y="94" text-anchor="middle" class="donut-lbl">total</text>
+              </svg>
+              <div class="donut-legend">
+                @for (seg of donutSegments(); track seg.status) {
+                  <div class="legend-item">
+                    <span class="legend-dot" [style.background]="seg.color"></span>
+                    <span class="legend-name">{{ seg.label }}</span>
+                    <span class="legend-val">{{ seg.count }} · {{ seg.percent }}%</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Top entreprises -->
+        <div class="card">
+          <h2 class="card-t">Top entreprises</h2>
+          @if (f.topEntreprises.length === 0) {
+            <div class="empty-chart">Pas encore d'entreprise</div>
+          } @else {
+            <div class="top-list">
+              @for (e of f.topEntreprises; track e.name; let i = $index) {
+                <div class="top-row">
+                  <span class="top-rank">{{ i + 1 }}</span>
+                  <span class="top-name">{{ e.name }}</span>
+                  <span class="top-bar-wrap">
+                    <span class="top-bar" [style.width.%]="(e.count / f.topEntreprises[0].count) * 100"></span>
+                  </span>
+                  <span class="top-count">{{ e.count }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Section Premium -->
+      <div class="premium-section" [class.locked]="!isPremiumUser()">
+        <div class="premium-header">
+          <div>
+            <div class="premium-eyebrow">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                <path d="M2 5.5l2.5 6.5h7L14 5.5l-3 2.5L8 3.5 5 8 2 5.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+              Premium
+            </div>
+            <h2 class="premium-title">Analyses avancées</h2>
+            <p class="premium-sub">Comprenez ce qui fait décoller vos candidatures.</p>
+          </div>
+          @if (!isPremiumUser()) {
+            <button type="button" class="btn-upgrade-mini" (click)="goPremium()">
+              Débloquer
+            </button>
+          }
+        </div>
+
+        <div class="premium-content" [class.blurred]="!isPremiumUser()">
+          <!-- Chart mensuel -->
+          <div class="card">
+            <h3 class="card-t">Évolution mensuelle</h3>
+            <div class="bars-chart">
+              @for (m of premiumOrFake().monthlyEvolution; track m.year + '-' + m.month) {
+                <div class="bar-col">
+                  <div class="bar-stack" [style.height.%]="(m.total / maxMonthlyValue()) * 100">
+                    @if (m.total > 0) {
+                      <div class="bar-total">{{ m.total }}</div>
+                    }
+                    <div class="bar-seg bar-neg" [style.height.%]="m.total > 0 ? (m.negative / m.total) * 100 : 0"></div>
+                    <div class="bar-seg bar-int" [style.height.%]="m.total > 0 ? ((m.interviews - m.positive) / m.total) * 100 : 0"></div>
+                    <div class="bar-seg bar-pos" [style.height.%]="m.total > 0 ? (m.positive / m.total) * 100 : 0"></div>
+                    <div class="bar-seg bar-other" [style.height.%]="m.total > 0 ? ((m.total - m.interviews - m.negative) / m.total) * 100 : 0"></div>
+                  </div>
+                  <div class="bar-lbl">{{ monthLabel(m) }}</div>
+                </div>
+              }
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item"><span class="legend-dot" style="background:#12b981"></span> Offre reçue</div>
+              <div class="legend-item"><span class="legend-dot" style="background:#f0913a"></span> Entretien</div>
+              <div class="legend-item"><span class="legend-dot" style="background:#e2557c"></span> Refusée</div>
+              <div class="legend-item"><span class="legend-dot" style="background:#c8ccd6"></span> Autres</div>
+            </div>
+          </div>
+
+          <!-- Analytics du score -->
+          <div class="card">
+            <h3 class="card-t">Impact du score de compatibilité</h3>
+            <div class="score-insights">
+              <div class="score-tile">
+                <div class="tile-lbl">Score moyen</div>
+                <div class="tile-val">{{ formatScore(premiumOrFake().averageScore) }}</div>
+              </div>
+              <div class="score-tile tile-hi">
+                <div class="tile-lbl">Sur les offres où j'ai eu un entretien</div>
+                <div class="tile-val">{{ formatScore(premiumOrFake().avgScoreWithInterview) }}</div>
+              </div>
+              <div class="score-tile tile-lo">
+                <div class="tile-lbl">Sur les offres sans réponse</div>
+                <div class="tile-val">{{ formatScore(premiumOrFake().avgScoreWithoutResponse) }}</div>
+              </div>
+            </div>
+
+            <h4 class="card-sub">Distribution des scores</h4>
+            <div class="histo-chart">
+              @for (b of premiumOrFake().scoreDistribution; track b.from) {
+                <div class="histo-col">
+                  <div class="histo-bar" [style.height.%]="(b.count / maxScoreBucket()) * 100">
+                    @if (b.count > 0) {
+                      <div class="histo-val">{{ b.count }}</div>
+                    }
+                  </div>
+                  <div class="histo-lbl">{{ b.from }}</div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Top compétences -->
+          <div class="two-col">
+            <div class="card">
+              <h3 class="card-t">Compétences les plus demandées</h3>
+              <div class="skill-list">
+                @for (c of premiumOrFake().mostRequestedCompetences; track c.name) {
+                  <div class="skill-row">
+                    <span class="skill-name">{{ c.name }}</span>
+                    <span class="skill-bar-wrap">
+                      <span class="skill-bar skill-bar-req" [style.width.%]="(c.count / premiumOrFake().mostRequestedCompetences[0].count) * 100"></span>
+                    </span>
+                    <span class="skill-count">{{ c.count }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-t">
+                Compétences manquantes
+                <span class="card-hint">— celles à apprendre pour débloquer plus d'offres</span>
+              </h3>
+              @if (premiumOrFake().mostMissingCompetences.length === 0) {
+                <div class="empty-chart">Vous avez toutes les compétences requises</div>
+              } @else {
+                <div class="skill-list">
+                  @for (c of premiumOrFake().mostMissingCompetences; track c.name) {
+                    <div class="skill-row">
+                      <span class="skill-name">{{ c.name }}</span>
+                      <span class="skill-bar-wrap">
+                        <span class="skill-bar skill-bar-miss" [style.width.%]="(c.count / premiumOrFake().mostMissingCompetences[0].count) * 100"></span>
+                      </span>
+                      <span class="skill-count">{{ c.count }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        @if (!isPremiumUser()) {
+          <div class="premium-overlay">
+            <div class="overlay-content">
+              <div class="overlay-badge">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                  <path d="M2 5.5l2.5 6.5h7L14 5.5l-3 2.5L8 3.5 5 8 2 5.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                </svg>
+                Premium
+              </div>
+              <h3 class="overlay-title">Débloquez les analyses avancées</h3>
+              <p class="overlay-desc">
+                Découvrez quelles offres transforment le mieux, quelles compétences apprendre en priorité,
+                et suivez votre progression mois après mois.
+              </p>
+              <button type="button" class="btn-upgrade-full" (click)="goPremium()">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                  <path d="M2 5.5l2.5 6.5h7L14 5.5l-3 2.5L8 3.5 5 8 2 5.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                </svg>
+                Passer à Premium — 6 €/mois
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

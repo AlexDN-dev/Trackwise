@@ -23,7 +23,7 @@
 
     <nav class="nav" [class.nav-open]="mobileMenuOpen()">
       <button type="button" class="navlink on" (click)="closeMobileMenu()">Tableau</button>
-      <button type="button" class="navlink" (click)="closeMobileMenu()">Statistiques</button>
+      <button type="button" class="navlink" routerLink="/statistiques" (click)="closeMobileMenu()">Statistiques</button>
       <button type="button" class="navlink" (click)="closeMobileMenu()">Documents</button>
       <button type="button" class="navlink" routerLink="/profil" (click)="closeMobileMenu()">Paramètres</button>
     </nav>
