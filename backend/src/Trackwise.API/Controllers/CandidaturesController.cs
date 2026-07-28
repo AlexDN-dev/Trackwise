@@ -16,11 +16,13 @@ public class CandidaturesController : ControllerBase
 {
     private readonly ICandidatureService _service;
     private readonly IAnalysisService _analysisService;
+    private readonly IAiQuotaService _quota;
     
-    public CandidaturesController(ICandidatureService service, IAnalysisService analysisService)
+    public CandidaturesController(ICandidatureService service, IAnalysisService analysisService, IAiQuotaService quota)
     {
         _service = service;
         _analysisService = analysisService;
+        _quota = quota;
     }
 
     [HttpGet]
@@ -58,13 +60,21 @@ public class CandidaturesController : ControllerBase
     }
 
     [HttpPost("analyze")]
-    [EnableRateLimiting("ai")]
-    public async Task<ActionResult<AnalysisResult>> Analyze(AnalyzeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Analyze([FromBody] AnalyzeRequest request, CancellationToken cancellationToken)
     {
-        var result = await _analysisService.AnalyzeAsync(request.Text, cancellationToken);
-        if (result is null)
-            return StatusCode(503, new { message = "L'analyse IA a échoué. Réessaie ou saisis manuellement." });
+        var userId = User.GetUserId();
 
+        var check = await _quota.CheckAndIncrementAsync(userId, cancellationToken);
+        if (!check.Allowed)
+        {
+            return StatusCode(StatusCodes.Status429TooManyRequests, new
+            {
+                message = "Quota d'analyses IA atteint.",
+                quota = check.Status,
+            });
+        }
+
+        var result = await _analysisService.AnalyzeAsync(request.Text, cancellationToken);
         return Ok(result);
     }
 }

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Trackwise.API.Extensions;
+using Trackwise.Application.AI;
+using Trackwise.Application.AI.Dtos;
 using Trackwise.Application.Users;
 using Trackwise.Application.Users.Dtos;
 
@@ -45,5 +47,14 @@ public class UsersController : ControllerBase
         return ok
             ? NoContent()
             : BadRequest(new { message = "Mot de passe actuel incorrect." });
+    }
+    
+    [HttpGet("ai-quota")]
+    public async Task<ActionResult<AiQuotaStatus>> GetAiQuota(
+        [FromServices] IAiQuotaService quota,
+        CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        return Ok(await quota.GetAsync(userId, cancellationToken));
     }
 }

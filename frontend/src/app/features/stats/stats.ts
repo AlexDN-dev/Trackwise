@@ -6,6 +6,7 @@ import { SubscriptionService } from '../../core/services/subscription.service';
 import { FreeStatsResponse, PremiumStatsResponse } from '../../core/models/stats.models';
 import { CandidatureStatus } from '../../core/models/candidature.models';
 import { PlanType } from '../../core/models/user.models';
+import { AiQuotaBadge } from '../../shared/components/ai-quota-badge/ai-quota-badge';
 
 interface DonutSegment {
   status: CandidatureStatus;
@@ -62,7 +63,7 @@ const FAKE_PREMIUM: PremiumStatsResponse = {
 
 @Component({
   selector: 'app-stats',
-  imports: [RouterLink],
+  imports: [RouterLink, AiQuotaBadge],
   templateUrl: './stats.html',
   styleUrl: './stats.css',
 })

@@ -14,6 +14,8 @@ public class User : BaseEntity
     public string? StripeCustomerId { get; set; }
     public string? StripeSubscriptionId { get; set; }
     public DateTimeOffset? PremiumUntil { get; set; }
+    public int AiUsageCount { get; set; }
+    public DateTimeOffset AiUsageResetAt { get; set; }
 
     public ICollection<Candidature> Candidatures { get; set; } = new List<Candidature>();
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();

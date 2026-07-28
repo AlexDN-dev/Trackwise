@@ -32,6 +32,8 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>();
 
         services.AddScoped<IStatsService, StatsService>();
+
+        services.AddScoped<IAiQuotaService, AiQuotaService>();
         return services;
     }
 }

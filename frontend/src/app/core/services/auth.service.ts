@@ -3,10 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, finalize, firstValueFrom, of, shareReplay, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { RegisterRequest, LoginRequest, AuthResponse } from '../models/auth.models';
+import { AiQuotaService } from './ai-quota.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly quotaService = inject(AiQuotaService);
   private readonly baseUrl = `${environment.apiUrl}/auth`;
 
   private readonly accessToken = signal<string | null>(null);
@@ -21,7 +23,12 @@ export class AuthService {
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.baseUrl}/login`, request, { withCredentials: true })
-      .pipe(tap((res) => this.accessToken.set(res.accessToken)));
+      .pipe(
+        tap((res) => {
+          this.accessToken.set(res.accessToken);
+          this.quotaService.refresh().subscribe({ error: () => {} });
+        }),
+      );
   }
 
   logout(): Observable<void> {
@@ -48,6 +55,7 @@ export class AuthService {
   async tryRestoreSession(): Promise<void> {
     try {
       await firstValueFrom(this.refresh());
+      this.quotaService.refresh().subscribe({ error: () => {} });
     } catch {
       this.accessToken.set(null);
     }
@@ -60,5 +68,6 @@ export class AuthService {
   private clearLocal(): void {
     this.accessToken.set(null);
     this.refreshInFlight = null;
+    this.quotaService.clear();
   }
 }

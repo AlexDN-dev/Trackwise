@@ -3,10 +3,11 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { AuthService } from '../../core/services/auth.service';
 import { SubscriptionService } from '../../core/services/subscription.service';
 import { PlanType } from '../../core/models/user.models';
+import { AiQuotaBadge } from '../../shared/components/ai-quota-badge/ai-quota-badge';
 
 @Component({
   selector: 'app-profile',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, AiQuotaBadge],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })

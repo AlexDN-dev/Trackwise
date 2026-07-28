@@ -208,6 +208,12 @@ namespace Trackwise.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("AiUsageCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("AiUsageResetAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 

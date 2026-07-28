@@ -2,10 +2,12 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AiJob, AnalysisResult, AnalyzeRequest } from '../models/ai.models';
+import { AiQuotaService } from './ai-quota.service';
 
 @Injectable({ providedIn: 'root' })
 export class AiAnalysisService {
   private readonly http = inject(HttpClient);
+  private readonly quotaService = inject(AiQuotaService);
   private readonly baseUrl = `${environment.apiUrl}/candidatures/analyze`;
   private readonly _openRequest = signal<string | null>(null);
 
@@ -25,14 +27,22 @@ export class AiAnalysisService {
 
     const body: AnalyzeRequest = { text };
     this.http.post<AnalysisResult>(this.baseUrl, body).subscribe({
-      next: (result) => this.updateJob(id, { status: 'succeeded', result }),
+      next: (result) => {
+        this.updateJob(id, { status: 'succeeded', result });
+        this.quotaService.refresh().subscribe({ error: () => {} });
+      },
       error: (err) => {
+        const is429 = err?.status === 429;
+        if (is429 && err?.error?.quota) {
+          this.quotaService.quota.set(err.error.quota);
+        } else {
+          this.quotaService.refresh().subscribe({ error: () => {} });
+        }
         this.updateJob(id, {
           status: 'failed',
-          error:
-            err?.status === 429
-              ? 'Trop de requêtes, Attends une minute.'
-              : "L'analyse a échoué. Réessaie ou saisi manuellement.",
+          error: is429
+            ? 'Quota IA atteint. Passe Premium pour en avoir plus.'
+            : "L'analyse a échoué. Réessaie ou saisi manuellement.",
         });
       },
     });

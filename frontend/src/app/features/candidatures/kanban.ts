@@ -14,6 +14,7 @@ import { effect } from '@angular/core';
 import { AiAnalysisService} from '../../core/services/ai-analysis.service';
 import { AnalysisResult} from '../../core/models/ai.models';
 import { ToastService } from '../../core/services/toast.service';
+import { AiQuotaBadge } from '../../shared/components/ai-quota-badge/ai-quota-badge';
 
 const COLUMNS = [
   { status: CandidatureStatus.ToSend, label: 'À postuler', cls: 'c-postuler' },
@@ -27,7 +28,7 @@ const STATUS_ORDER = COLUMNS.map((c) => c.status);
 
 @Component({
   selector: 'app-kanban',
-  imports: [KanbanCard, CdkDropListGroup, CdkDropList, CdkDrag, CandidatureModal, ConfirmDialog, RouterLink],
+  imports: [KanbanCard, CdkDropListGroup, CdkDropList, CdkDrag, CandidatureModal, ConfirmDialog, RouterLink, AiQuotaBadge],
   templateUrl: './kanban.html',
   styleUrl: './kanban.css',
 })

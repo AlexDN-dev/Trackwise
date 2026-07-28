@@ -45,7 +45,8 @@ public class AuthService : IAuthService
             Firstname = request.Firstname.Trim(),
             Lastname = request.Lastname.Trim(),
             Email = email,
-            PasswordHash = _passwordHasher.Hash(request.Password)
+            PasswordHash = _passwordHasher.Hash(request.Password),
+            AiUsageResetAt = DateTimeOffset.UtcNow.AddDays(30),
         };
 
         _userRepository.Add(user);
