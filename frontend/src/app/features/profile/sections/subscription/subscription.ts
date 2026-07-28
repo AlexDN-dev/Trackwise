@@ -4,6 +4,7 @@ import { catchError, of, take, timer } from 'rxjs';
 import { SubscriptionService } from '../../../../core/services/subscription.service';
 import { SubscriptionResponse } from '../../../../core/models/subscription.models';
 import { PlanType } from '../../../../core/models/user.models';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-profile-subscription',
@@ -14,6 +15,7 @@ import { PlanType } from '../../../../core/models/user.models';
 export class ProfileSubscription implements OnInit {
   private readonly service = inject(SubscriptionService);
   private readonly route = inject(ActivatedRoute);
+  private readonly toastService = inject(ToastService);
 
   readonly subscription = signal<SubscriptionResponse | null>(null);
   readonly loading = signal(true);
@@ -81,6 +83,7 @@ export class ProfileSubscription implements OnInit {
       error: () => {
         this.errorMessage.set('Impossible de démarrer le paiement.');
         this.processing.set(false);
+        this.toastService.error('Impossible de démarrer le paiement.');
       },
     });
   }
@@ -94,6 +97,7 @@ export class ProfileSubscription implements OnInit {
       error: () => {
         this.errorMessage.set("Impossible d'ouvrir le portail de gestion.");
         this.processing.set(false);
+        this.toastService.error("Impossible d'ouvrir le portail de gestion.");
       },
     });
   }

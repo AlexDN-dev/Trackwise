@@ -1,0 +1,30 @@
+<div class="stack" role="status" aria-live="polite">
+  @for (t of toasts(); track t.id) {
+    <div class="toast toast-{{ t.type }}">
+      <div class="toast-ic">
+        @if (t.type === 'success') {
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M6.5 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        } @else if (t.type === 'error') {
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M10 6v5M10 14v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        } @else {
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M10 10v4M10 6v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        }
+      </div>
+      <div class="toast-msg">{{ t.message }}</div>
+      <button type="button" class="toast-x" (click)="dismiss(t.id)" aria-label="Fermer">
+        <svg width="12" height="12" viewBox="0 0 12 12">
+          <path d="M2 2l8 8M10 2L2 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  }
+</div>

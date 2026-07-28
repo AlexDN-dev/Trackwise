@@ -13,6 +13,7 @@ import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-di
 import { effect } from '@angular/core';
 import { AiAnalysisService} from '../../core/services/ai-analysis.service';
 import { AnalysisResult} from '../../core/models/ai.models';
+import { ToastService } from '../../core/services/toast.service';
 
 const COLUMNS = [
   { status: CandidatureStatus.ToSend, label: 'À postuler', cls: 'c-postuler' },
@@ -35,6 +36,7 @@ export class Kanban {
   private readonly router = inject(Router);
   private readonly candidatureService = inject(CandidatureService);
   private readonly aiService = inject(AiAnalysisService);
+  private readonly toastService = inject(ToastService);
 
   readonly candidatures = signal<CandidatureResponse[]>([]);
   readonly loading = signal(true);
@@ -202,7 +204,11 @@ export class Kanban {
     this.pendingDelete.set(null);
 
     this.candidatureService.delete(candidature.id).subscribe({
-      error: () => this.candidatures.set(previous),
+      next: () => this.toastService.success('Candidature supprimée.'),
+      error: () => {
+        this.candidatures.set(previous);
+        this.toastService.error('Impossible de supprimer la candidature.');
+      },
     });
   }
 

@@ -17,6 +17,7 @@ import { AiAnalysisService } from '../../../../core/services/ai-analysis.service
 import { AnalysisResult } from '../../../../core/models/ai.models';
 import { CompetenceService } from '../../../../core/services/competence.service';
 import { CompetenceResponse } from '../../../../core/models/competence.models';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-candidature-modal',
@@ -29,6 +30,7 @@ export class CandidatureModal implements OnInit {
   private readonly candidatureService = inject(CandidatureService);
   private readonly aiService = inject(AiAnalysisService);
   private readonly competenceService = inject(CompetenceService);
+  private readonly toastService = inject(ToastService);
   private readonly skillInputRef = viewChild<ElementRef<HTMLInputElement>>('skillInput');
 
   readonly prefill = input<AnalysisResult | null>(null);
@@ -210,14 +212,19 @@ export class CandidatureModal implements OnInit {
       next: (result) => {
         this.saved.emit(result);
         this.loading.set(false);
+        this.toastService.success(
+          existing
+            ? 'Candidature modifiée avec succès.'
+            : 'Candidature ajoutée avec succès.',
+        );
       },
       error: () => {
         this.loading.set(false);
-        this.errorMessage.set(
-          existing
-            ? 'Impossible de modifier la candidature.'
-            : "Impossible d'ajouter la candidature.",
-        );
+        const msg = existing
+          ? 'Impossible de modifier la candidature.'
+          : "Impossible d'ajouter la candidature.";
+        this.errorMessage.set(msg);
+        this.toastService.error(msg);
       },
     });
   }

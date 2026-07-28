@@ -1,6 +1,7 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../../core/services/user.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-profile-informations',
@@ -10,6 +11,7 @@ import { UserService } from '../../../../core/services/user.service';
 })
 export class ProfileInformations implements OnInit {
   private readonly userService = inject(UserService);
+  private readonly toastService = inject(ToastService);
 
   readonly firstname = signal('');
   readonly lastname = signal('');
@@ -68,10 +70,12 @@ export class ProfileInformations implements OnInit {
           this.initialFirstname = user.firstname;
           this.initialLastname = user.lastname;
           this.saving.set(false);
+          this.toastService.success('Profil mis à jour.');
         },
         error: () => {
           this.errorMessage.set('Erreur lors de la sauvegarde.');
           this.saving.set(false);
+          this.toastService.error('Impossible de sauvegarder le profil.');
         },
       });
   }
