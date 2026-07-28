@@ -1,6 +1,6 @@
-namespace Trackwise.Application.Common.Interfaces;
+namespace Trackwise.Application.AI;
 
-public interface IOllamaClient
+public interface IAiAnalysisClient
 {
     Task<string?> GenerateJsonAsync(string systemPrompt, string userPrompt,
         CancellationToken cancellationToken = default);

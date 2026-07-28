@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Trackwise.Application.AI;
 using Trackwise.Application.Auth;
 using Trackwise.Application.Candidatures;
 using Trackwise.Application.Common.Interfaces;
@@ -40,12 +41,25 @@ public static class DependencyInjection
         services.Configure<OllamaSettings>(configuration.GetSection(OllamaSettings.SectionName));
 
         services.AddHostedService<OllamaWarmupService>();
-        services.AddHttpClient<IOllamaClient, OllamaClient>((sp, client) =>
+        var aiProvider = configuration["Ai:Provider"] ?? "Ollama";
+
+        services.Configure<OllamaSettings>(configuration.GetSection(OllamaSettings.SectionName));
+        services.Configure<AzureOpenAiSettings>(configuration.GetSection(AzureOpenAiSettings.SectionName));
+
+        if (aiProvider.Equals("AzureOpenAi", StringComparison.OrdinalIgnoreCase))
         {
-            var options = sp.GetRequiredService<IOptions<OllamaSettings>>().Value;
-            client.BaseAddress = new Uri(options.BaseUrl);
-            client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
-        });
+            services.AddSingleton<IAiAnalysisClient, AzureOpenAiClient>();
+        }
+        else
+        {
+            services.AddHostedService<OllamaWarmupService>();
+            services.AddHttpClient<IAiAnalysisClient, OllamaClient>((sp, client) =>
+            {
+                var options = sp.GetRequiredService<IOptions<OllamaSettings>>().Value;
+                client.BaseAddress = new Uri(options.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+            });
+        }
 
         services.AddScoped<ICompetenceRepository, CompetenceRepository>();
         services.AddScoped<IUserCompetenceRepository, UserCompetenceRepository>();

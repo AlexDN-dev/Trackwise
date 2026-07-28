@@ -2,10 +2,11 @@ using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 using Trackwise.Application.Common.Interfaces;
 using Microsoft.Extensions.Options;
+using Trackwise.Application.AI;
 
 namespace Trackwise.Infrastructure.AI;
 
-public class OllamaClient : IOllamaClient
+public class OllamaClient : IAiAnalysisClient
 {
     private readonly HttpClient _http;
     private readonly OllamaSettings _settings;

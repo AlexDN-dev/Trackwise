@@ -98,6 +98,8 @@ try
     });
 
     var app = builder.Build();
+    
+    Log.Information("Provider IA actif : {Provider}", app.Configuration["Ai:Provider"] ?? "Ollama");
 
     app.UseMiddleware<SecurityHeadersMiddleware>();
     app.UseSerilogRequestLogging();

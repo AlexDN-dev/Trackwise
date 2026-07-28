@@ -1,13 +1,12 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Trackwise.Application.AI.Dtos;
-using Trackwise.Application.Common.Interfaces;
 
 namespace Trackwise.Application.AI.Services;
 
 public class AnalysisService : IAnalysisService
 {
-    private readonly IOllamaClient _ollama;
+    private readonly IAiAnalysisClient _ai;
     private readonly ILogger<AnalysisService> _logger;
 
     private static readonly JsonSerializerOptions JsonOpts = new()
@@ -58,9 +57,9 @@ private const string SystemPrompt = """
     {"title":"Développeur .NET","entrepriseName":"Bol.com","location":"Utrecht, Pays-Bas","contractType":1,"urlOffer":null,"description":"Poste de développeur .NET à temps plein chez Bol.com. Vous travaillerez sur des services C# hébergés sur Azure. Contrat CDI, équipe produit e-commerce.","competences":["C#",".NET","Azure"]}
     """;
 
-    public AnalysisService(IOllamaClient ollama, ILogger<AnalysisService> logger)
+    public AnalysisService(IAiAnalysisClient ai, ILogger<AnalysisService> logger)
     {
-        _ollama = ollama;
+        _ai = ai;
         _logger = logger;
     }
 
@@ -68,7 +67,7 @@ private const string SystemPrompt = """
     {
         var userPrompt = $"Offer d'emploi : \n\n{text}";
 
-        var raw = await _ollama.GenerateJsonAsync(SystemPrompt, userPrompt, cancellationToken);
+        var raw = await _ai.GenerateJsonAsync(SystemPrompt, userPrompt, cancellationToken);
         if (string.IsNullOrWhiteSpace(raw))
         {
             _logger.LogWarning("Analyse IA : reponse Ollama vide");

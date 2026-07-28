@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Trackwise.Application.AI;
 using Trackwise.Application.Common.Interfaces;
 
 namespace Trackwise.Infrastructure.AI;
@@ -25,7 +26,7 @@ public class OllamaWarmupService : BackgroundService
         try
         {
             using var scope = _services.CreateScope();
-            var ollama = scope.ServiceProvider.GetRequiredService<IOllamaClient>();
+            var ollama = scope.ServiceProvider.GetRequiredService<IAiAnalysisClient>();
 
             await ollama.GenerateJsonAsync(
                 systemPrompt: "Reponds en JSON.",
