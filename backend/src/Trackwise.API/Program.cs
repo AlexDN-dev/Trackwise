@@ -1,5 +1,6 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Scalar.AspNetCore;
 using Serilog;
@@ -9,6 +10,7 @@ using Trackwise.Infrastructure;
 using Trackwise.Application;
 using Trackwise.Domain.Enums;
 using Trackwise.API.Logging;
+using Trackwise.Infrastructure.Persistence;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
 
@@ -127,6 +129,12 @@ try
     app.UseAuthorization();
     app.UseRateLimiter();
     app.MapControllers();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+    }
 
     app.Run();
 }
