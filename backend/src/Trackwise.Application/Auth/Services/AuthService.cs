@@ -66,6 +66,12 @@ public class AuthService : IAuthService
             return null;
         }
 
+        if (user.IsBanned)
+        {
+            _logger.LogWarning("Connexion refusée : user banni {UserId}", user.Id);
+            return null;
+        }
+
         var response = IssueTokens(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -94,6 +100,14 @@ public class AuthService : IAuthService
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         
             _logger.LogWarning("Réutilisation d'un refresh token revoque pour {UserId} : toute la chaine active revoquée", stored.UserId);
+            return null;
+        }
+        
+        if (stored.User.IsBanned)
+        {
+            stored.RevokedAt = DateTimeOffset.UtcNow;
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            _logger.LogWarning("Refresh refuse : user banni {UserId}", stored.UserId);
             return null;
         }
 

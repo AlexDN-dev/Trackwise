@@ -1,0 +1,138 @@
+<div class="page">
+  <div class="page-hd">
+    <h1>Utilisateurs</h1>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <input
+        placeholder="Email, nom, prénom…"
+        [ngModel]="search()"
+        (ngModelChange)="onSearch($event)"
+      />
+      @if (search()) {
+        <button class="clear" (click)="clearSearch()" title="Effacer">×</button>
+      }
+    </div>
+  </div>
+
+  @if (loading() && !page()) {
+    <div class="skel">Chargement…</div>
+  } @else if (page(); as p) {
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Nom</th>
+            <th>Rôle</th>
+            <th>Plan</th>
+            <th>Inscrit</th>
+            <th>Statut</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of p.items; track u.id) {
+            <tr [class.banned]="u.isBanned">
+              <td class="mono">{{ u.email }}</td>
+              <td>{{ u.firstname }} {{ u.lastname }}</td>
+              <td>
+                @if (u.role === UserRole.Admin) {
+                  <span class="chip admin">Admin</span>
+                } @else {
+                  <span class="chip">User</span>
+                }
+              </td>
+              <td>
+                @if (u.plan === PlanType.Premium) {
+                  <span class="chip premium">Premium</span>
+                } @else {
+                  <span class="chip">Free</span>
+                }
+              </td>
+              <td>{{ formatDate(u.createdAt) }}</td>
+              <td>
+                @if (u.isBanned) {
+                  <span class="chip danger">Banni</span>
+                } @else {
+                  <span class="chip ok">Actif</span>
+                }
+              </td>
+              <td class="right">
+                <button class="btn-small" (click)="openDetail(u)">Détails</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-row">Aucun utilisateur trouvé.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagi">
+      <button class="page-btn" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">‹</button>
+      <span class="page-info">
+        Page {{ currentPage() }} / {{ totalPages() }} <span class="sep">·</span> {{ p.total }} au total
+      </span>
+      <button class="page-btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">›</button>
+    </div>
+  }
+
+  @if (selected(); as u) {
+    <div class="overlay" (click)="closeDetail()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-hd">
+          <h2>{{ u.firstname }} {{ u.lastname }}</h2>
+          <button class="close" (click)="closeDetail()" aria-label="Fermer">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-grid">
+            <div><span class="k">Email</span><span class="v mono">{{ u.email }}</span></div>
+            <div><span class="k">Rôle</span><span class="v">{{ u.role === UserRole.Admin ? 'Admin' : 'User' }}</span></div>
+            <div><span class="k">Plan</span><span class="v">{{ u.plan === PlanType.Premium ? 'Premium' : 'Free' }}</span></div>
+            <div><span class="k">Premium jusqu'au</span><span class="v">{{ formatDate(u.premiumUntil) }}</span></div>
+            <div><span class="k">Inscrit le</span><span class="v">{{ formatDate(u.createdAt) }}</span></div>
+            <div><span class="k">Banni</span><span class="v">{{ u.isBanned ? 'Oui' : 'Non' }}</span></div>
+            <div><span class="k">Analyses IA (fenêtre)</span><span class="v">{{ u.aiUsageCount }}</span></div>
+            <div><span class="k">Reset quota</span><span class="v">{{ formatDate(u.aiUsageResetAt) }}</span></div>
+            <div><span class="k">Stripe Customer</span><span class="v mono small">{{ u.stripeCustomerId ?? '—' }}</span></div>
+            <div><span class="k">Stripe Subscription</span><span class="v mono small">{{ u.stripeSubscriptionId ?? '—' }}</span></div>
+          </div>
+
+          <div class="actions-grid">
+            <div class="action-box">
+              <div class="action-title">Ban / Unban</div>
+              @if (u.isBanned) {
+                <button class="btn ok-btn" (click)="unban()">Débannir</button>
+              } @else {
+                <button class="btn danger-btn" (click)="ban()">Bannir</button>
+              }
+            </div>
+
+            <div class="action-box">
+              <div class="action-title">Trial Premium</div>
+              <div class="input-row">
+                <input type="number" min="1" max="365" [ngModel]="trialDays()" (ngModelChange)="trialDays.set($event)" />
+                <span class="unit">jours</span>
+                <button class="btn accent-btn" (click)="grantTrial()">Accorder</button>
+              </div>
+            </div>
+
+            <div class="action-box">
+              <div class="action-title">Tokens IA supplémentaires</div>
+              <div class="input-row">
+                <input type="number" min="1" max="1000" [ngModel]="grantCount()" (ngModelChange)="grantCount.set($event)" />
+                <span class="unit">analyses</span>
+                <button class="btn accent-btn" (click)="grantTokens()">Accorder</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -61,6 +61,8 @@
 }
 .navlink:hover { background: var(--line2); color: var(--ink); }
 .navlink.on { background: var(--accent-soft); color: var(--accent-d); }
+.navlink.admin { color: #b8871f; }
+.navlink.admin:hover { background: rgba(212, 169, 67, 0.12); color: #b8871f; }
 
 .hspace { flex: 1; }
 

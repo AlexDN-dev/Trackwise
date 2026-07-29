@@ -13,6 +13,24 @@ export class AuthService {
 
   private readonly accessToken = signal<string | null>(null);
   readonly isAuthenticated = computed(() => this.accessToken() !== null);
+  readonly isAdmin = computed(() => this.roleFromToken(this.accessToken()) === 'Admin');
+
+  private roleFromToken(token: string | null): string | null {
+    if (!token) return null;
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+      let payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const pad = payload.length % 4;
+      if (pad) payload += '='.repeat(4 - pad);
+      const claims = JSON.parse(atob(payload));
+      return claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+        ?? claims['role']
+        ?? null;
+    } catch {
+      return null;
+    }
+  }
 
   private refreshInFlight: Observable<AuthResponse> | null = null;
 

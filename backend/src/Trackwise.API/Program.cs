@@ -23,6 +23,7 @@ try
         .Enrich.With<RedactionEnricher>());
     
     builder.Services.AddControllers();
+    builder.Services.AddMemoryCache();
     builder.Services.AddAuthorization(options =>
     {
         options.FallbackPolicy = new AuthorizationPolicyBuilder()
@@ -31,7 +32,11 @@ try
         
         options.AddPolicy("Premium", policy =>
             policy.RequireClaim("plan", nameof(PlanType.Premium)));
+        
+        options.AddPolicy("Admin", policy => 
+            policy.RequireClaim(System.Security.Claims.ClaimTypes.Role,nameof(UserRole.Admin)));
     });
+    
     builder.Services.AddOpenApi();
     builder.Services.AddJwtAuthentication(builder.Configuration);
 
@@ -104,6 +109,7 @@ try
     app.UseMiddleware<SecurityHeadersMiddleware>();
     app.UseSerilogRequestLogging();
     app.UseExceptionHandler();
+    app.UseMiddleware<BannedIpMiddleware>();
 
     if (app.Environment.IsDevelopment())
     {

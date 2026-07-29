@@ -26,6 +26,9 @@
       <button type="button" class="navlink" routerLink="/statistiques" (click)="closeMobileMenu()">Statistiques</button>
       <button type="button" class="navlink" (click)="closeMobileMenu()">Documents</button>
       <button type="button" class="navlink on" (click)="closeMobileMenu()">Paramètres</button>
+      @if (isAdmin()) {
+        <button type="button" class="navlink admin" routerLink="/admin" (click)="closeMobileMenu()">Admin</button>
+      }
     </nav>
 
     <div class="hspace"></div>

@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Trackwise.Application.Admin;
+using Trackwise.Application.Admin.Services;
 using Trackwise.Application.AI;
 using Trackwise.Application.AI.Services;
 using Trackwise.Application.Auth;
@@ -34,6 +36,14 @@ public static class DependencyInjection
         services.AddScoped<IStatsService, StatsService>();
 
         services.AddScoped<IAiQuotaService, AiQuotaService>();
+
+        services.AddScoped<IAdminAuditService, AdminAuditService>();
+
+        services.AddScoped<IAdminUserService, AdminUserService>();
+        
+        services.AddScoped<IAdminStatsService, AdminStatsService>();
+        services.AddScoped<IAdminLogsService, AdminLogsService>();
+        services.AddScoped<IBannedIpService, BannedIpService>();
         return services;
     }
 }

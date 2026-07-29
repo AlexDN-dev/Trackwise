@@ -1,0 +1,50 @@
+<div class="page">
+  <div class="page-hd">
+    <h1>Audit administrateur</h1>
+    <button class="refresh" (click)="reload()" [disabled]="loading()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <path d="M13.5 8a5.5 5.5 0 1 1-1.5-3.8M13.5 2v3h-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Rafraîchir
+    </button>
+  </div>
+
+  <p class="hint">Toutes les actions faites depuis le panel admin sont tracées ici.</p>
+
+  @if (loading()) {
+    <div class="skel">Chargement…</div>
+  } @else {
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Quand</th>
+            <th>Action</th>
+            <th>Admin</th>
+            <th>Cible</th>
+            <th>Détails</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of logs(); track log.id) {
+            <tr>
+              <td class="mono small">{{ formatDate(log.createdAt) }}</td>
+              <td>
+                <span class="chip" [class]="actionKind(log.action)">{{ actionLabel(log.action) }}</span>
+              </td>
+              <td class="mono small">{{ shortId(log.adminId) }}</td>
+              <td class="mono small">{{ shortId(log.targetUserId) }}</td>
+              <td class="mono small dim">{{ formatDetails(log.details) }}</td>
+              <td class="mono small dim">{{ log.ipAddress ?? '—' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty-row">Aucune action enregistrée pour l'instant.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

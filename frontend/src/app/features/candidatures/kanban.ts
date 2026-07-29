@@ -39,6 +39,8 @@ export class Kanban {
   private readonly aiService = inject(AiAnalysisService);
   private readonly toastService = inject(ToastService);
 
+  readonly isAdmin = this.auth.isAdmin;
+
   readonly candidatures = signal<CandidatureResponse[]>([]);
   readonly loading = signal(true);
   readonly total = computed(() => this.candidatures().length);

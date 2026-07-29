@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Trackwise.Application.Admin;
 using Trackwise.Application.AI;
 using Trackwise.Application.Auth;
 using Trackwise.Application.Candidatures;
@@ -38,9 +39,8 @@ public static class DependencyInjection
 
         services.AddScoped<IEntrepriseRepository, EntrepriseRepository>();
 
-        services.Configure<OllamaSettings>(configuration.GetSection(OllamaSettings.SectionName));
+        services.AddScoped<IAdminAuditRepository, AdminAuditRepository>();
 
-        services.AddHostedService<OllamaWarmupService>();
         var aiProvider = configuration["Ai:Provider"] ?? "Ollama";
 
         services.Configure<OllamaSettings>(configuration.GetSection(OllamaSettings.SectionName));
@@ -66,6 +66,9 @@ public static class DependencyInjection
 
         services.Configure<StripeSettings>(configuration.GetSection(StripeSettings.SectionName));
         services.AddScoped<ISubscriptionService, StripeSubscriptionService>();
+        
+        services.AddScoped<IAdminStatsRepository, AdminStatsRepository>();
+        services.AddScoped<IBannedIpRepository, BannedIpRepository>();
         return services;
 
     }

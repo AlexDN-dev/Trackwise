@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -53,6 +54,39 @@ export const routes: Routes = [
           import('./features/profile/sections/subscription/subscription').then(
             (m) => m.ProfileSubscription,
           ),
+      },
+    ],
+  },
+  {
+    path: 'admin',
+    loadComponent: () => import('./features/admin/admin').then((m) => m.Admin),
+    canActivate: [adminGuard],
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'stats' },
+      {
+        path: 'stats',
+        loadComponent: () =>
+          import('./features/admin/sections/stats/admin-stats').then((m) => m.AdminStats),
+      },
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./features/admin/sections/users/admin-users').then((m) => m.AdminUsers),
+      },
+      {
+        path: 'ips',
+        loadComponent: () =>
+          import('./features/admin/sections/ips/admin-ips').then((m) => m.AdminIps),
+      },
+      {
+        path: 'audit',
+        loadComponent: () =>
+          import('./features/admin/sections/audit/admin-audit').then((m) => m.AdminAudit),
+      },
+      {
+        path: 'logs',
+        loadComponent: () =>
+          import('./features/admin/sections/logs/admin-logs').then((m) => m.AdminLogs),
       },
     ],
   },

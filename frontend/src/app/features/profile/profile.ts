@@ -16,6 +16,8 @@ export class Profile implements OnInit {
   private readonly router = inject(Router);
   private readonly subscriptionService = inject(SubscriptionService);
 
+  readonly isAdmin = this.auth.isAdmin;
+
   readonly plan = signal<PlanType | null>(null);
   readonly isPremium = computed(() => this.plan() === PlanType.Premium);
   readonly planLabel = computed(() => (this.isPremium() ? 'Premium' : 'Free'));

@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="page-hd">
+    <h1>IPs bannies</h1>
+  </div>
+
+  <div class="form-box">
+    <div class="form-title">Bannir une nouvelle IP</div>
+    <div class="form-row">
+      <input
+        placeholder="Adresse IP (ex : 1.2.3.4)"
+        [ngModel]="formIp()"
+        (ngModelChange)="formIp.set($event)"
+        [disabled]="submitting()"
+      />
+      <input
+        placeholder="Motif (optionnel)"
+        [ngModel]="formReason()"
+        (ngModelChange)="formReason.set($event)"
+        [disabled]="submitting()"
+      />
+      <button class="btn danger-btn" (click)="submit()" [disabled]="submitting()">
+        Bannir
+      </button>
+    </div>
+    <div class="warn-line">
+      ⚠ Ne bannis pas ton IP actuelle — tu te bloques du panel pendant 30 s.
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="skel">Chargement…</div>
+  } @else {
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>IP</th>
+            <th>Motif</th>
+            <th>Bannie le</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ip of ips(); track ip.id) {
+            <tr>
+              <td class="mono">{{ ip.ipAddress }}</td>
+              <td>{{ ip.reason ?? '—' }}</td>
+              <td>{{ formatDate(ip.createdAt) }}</td>
+              <td class="right">
+                <button class="btn-small" (click)="unban(ip.ipAddress)">Débannir</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="empty-row">Aucune IP bannie.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

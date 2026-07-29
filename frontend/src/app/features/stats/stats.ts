@@ -69,6 +69,7 @@ const FAKE_PREMIUM: PremiumStatsResponse = {
 })
 export class Stats implements OnInit {
   private readonly auth = inject(AuthService);
+  readonly isAdmin = this.auth.isAdmin;
   private readonly router = inject(Router);
   private readonly statsService = inject(StatsService);
   private readonly subscriptionService = inject(SubscriptionService);

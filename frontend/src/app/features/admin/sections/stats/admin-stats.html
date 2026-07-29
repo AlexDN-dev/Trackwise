@@ -1,0 +1,50 @@
+<div class="page">
+  <div class="page-hd">
+    <h1>Vue d'ensemble</h1>
+    <button class="refresh" (click)="reload()" [disabled]="loading()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <path d="M13.5 8a5.5 5.5 0 1 1-1.5-3.8M13.5 2v3h-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Rafraîchir
+    </button>
+  </div>
+
+  @if (loading() && !stats()) {
+    <div class="skel">Chargement…</div>
+  } @else if (stats(); as s) {
+    <div class="cards">
+      <div class="card">
+        <span class="lbl">Utilisateurs totaux</span>
+        <span class="val">{{ s.totalUsers }}</span>
+      </div>
+      <div class="card accent">
+        <span class="lbl">Free / Premium</span>
+        <span class="val">{{ s.freeUsers }} <span class="sep">/</span> {{ s.premiumUsers }}</span>
+      </div>
+      <div class="card warn">
+        <span class="lbl">Bannis</span>
+        <span class="val">{{ s.bannedUsers }}</span>
+      </div>
+      <div class="card">
+        <span class="lbl">Admins</span>
+        <span class="val">{{ s.admins }}</span>
+      </div>
+      <div class="card">
+        <span class="lbl">Candidatures totales</span>
+        <span class="val">{{ s.totalCandidatures }}</span>
+      </div>
+      <div class="card">
+        <span class="lbl">Analyses IA (mois en cours)</span>
+        <span class="val">{{ s.totalAiAnalysesThisMonth }}</span>
+      </div>
+      <div class="card">
+        <span class="lbl">Inscriptions 7j</span>
+        <span class="val">{{ s.signupsLast7Days }}</span>
+      </div>
+      <div class="card">
+        <span class="lbl">Inscriptions 30j</span>
+        <span class="val">{{ s.signupsLast30Days }}</span>
+      </div>
+    </div>
+  }
+</div>

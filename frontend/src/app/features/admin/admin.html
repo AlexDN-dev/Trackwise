@@ -1,0 +1,85 @@
+<div class="app">
+  <header class="hdr">
+    <a class="hbrand" routerLink="/" (click)="closeMobileMenu()">
+      <svg class="mk" viewBox="0 0 32 32">
+        <rect width="32" height="32" rx="9" fill="var(--accent)"></rect>
+        <path d="M9 17.2l4.4 4.4L23 10.8" stroke="#fff" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+      </svg>
+      <span class="wm">Trackwise <span class="admin-tag">ADMIN</span></span>
+    </a>
+
+    <button type="button" class="burger" (click)="toggleMobileMenu()" [class.on]="mobileMenuOpen()" aria-label="Menu">
+      @if (mobileMenuOpen()) {
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      } @else {
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      }
+    </button>
+
+    <nav class="nav" [class.nav-open]="mobileMenuOpen()">
+      <button type="button" class="navlink" routerLink="/candidatures" (click)="closeMobileMenu()">Tableau</button>
+      <button type="button" class="navlink" routerLink="/statistiques" (click)="closeMobileMenu()">Statistiques</button>
+      <button type="button" class="navlink" routerLink="/profil" (click)="closeMobileMenu()">Paramètres</button>
+    </nav>
+
+    <div class="hspace"></div>
+
+    <button type="button" class="iconbtn" (click)="logout()" title="Se déconnecter">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+        <path d="M8 3H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M13 7l3 3-3 3M16 10H8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </header>
+
+  <div class="subbar">
+    <span class="pgtitle">Panel administrateur</span>
+    <span class="pgcount">Accès restreint</span>
+    <div class="hspace"></div>
+  </div>
+
+  <div class="admin-layout">
+    <aside class="side">
+      <a class="side-link" routerLink="stats" routerLinkActive="on">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+          <path d="M4 16V9M10 16V4M16 16v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Statistiques
+      </a>
+      <a class="side-link" routerLink="users" routerLinkActive="on">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M4 17c0-3 3-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        Utilisateurs
+      </a>
+      <a class="side-link" routerLink="ips" routerLinkActive="on">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+          <rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M7 10h6M10 7v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        IPs bannies
+      </a>
+      <a class="side-link" routerLink="audit" routerLinkActive="on">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+          <path d="M4 4h12v12H4z M4 8h12 M8 12h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Audit
+      </a>
+      <a class="side-link" routerLink="logs" routerLinkActive="on">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+          <path d="M5 4h8l3 3v9H5z M13 4v3h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Logs système
+      </a>
+    </aside>
+
+    <main class="admin-main">
+      <router-outlet />
+    </main>
+  </div>
+</div>
