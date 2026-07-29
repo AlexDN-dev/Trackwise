@@ -1,0 +1,124 @@
+.page { min-width: 0; }
+
+.page-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.page-hd h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+.refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink2);
+  cursor: pointer;
+}
+.refresh:hover { background: var(--line2); color: var(--ink); }
+.refresh:disabled { opacity: 0.5; }
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.filters select,
+.filters .search-input {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+  background: #fff;
+  color: var(--ink);
+}
+.filters .search-input {
+  flex: 1;
+  min-width: 180px;
+}
+.apply {
+  padding: 7px 14px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.apply:hover { background: var(--accent-d, #4338ca); }
+
+.meta {
+  color: var(--ink2);
+  font-size: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.meta .sep { color: var(--ink3, #9aa0b2); }
+
+.skel { color: var(--ink2); padding: 40px; text-align: center; }
+
+.log-panel {
+  background: #0f1428;
+  color: #e5e7f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 11.5px;
+  line-height: 1.6;
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.log-line {
+  display: flex;
+  gap: 8px;
+  padding: 1px 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.log-line .lvl {
+  flex-shrink: 0;
+  width: 40px;
+  color: #9aa0b2;
+  font-weight: 700;
+}
+.log-line .raw {
+  color: #cbd0e0;
+  flex: 1;
+}
+
+.log-line.inf .lvl { color: #7ba7ff; }
+.log-line.wrn .lvl { color: #f0913a; }
+.log-line.wrn .raw { color: #ffd39a; }
+.log-line.err .lvl,
+.log-line.ftl .lvl {
+  color: #ff6b8a;
+}
+.log-line.err .raw,
+.log-line.ftl .raw {
+  color: #ffb1c1;
+}
+.log-line.dbg .lvl { color: #12b981; }
+
+.empty-row {
+  text-align: center;
+  color: #9aa0b2;
+  padding: 24px;
+  font-size: 12px;
+}

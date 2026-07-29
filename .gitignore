@@ -3,8 +3,8 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-# serilog rolling files
-logs/
+# serilog rolling files (ancré racine + backend, pour ne pas capturer les features front nommées "logs")
+/logs/
 backend/**/logs/
 
 # dotenv files
@@ -37,7 +37,6 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-[Ll]ogs/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

@@ -1,0 +1,60 @@
+<div class="page">
+  <div class="page-hd">
+    <h1>Logs système</h1>
+    <button class="refresh" (click)="reload()" [disabled]="loading()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <path d="M13.5 8a5.5 5.5 0 1 1-1.5-3.8M13.5 2v3h-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Rafraîchir
+    </button>
+  </div>
+
+  <div class="filters">
+    <select [ngModel]="level()" (ngModelChange)="level.set($event); reload()">
+      <option value="">Tous les niveaux</option>
+      <option value="INF">INF · Info</option>
+      <option value="WRN">WRN · Warning</option>
+      <option value="ERR">ERR · Error</option>
+      <option value="FTL">FTL · Fatal</option>
+      <option value="DBG">DBG · Debug</option>
+    </select>
+
+    <input
+      class="search-input"
+      placeholder="Recherche texte…"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+      (keydown.enter)="reload()"
+    />
+
+    <select [ngModel]="linesCount()" (ngModelChange)="linesCount.set($event); reload()">
+      <option [ngValue]="100">100 lignes</option>
+      <option [ngValue]="200">200 lignes</option>
+      <option [ngValue]="500">500 lignes</option>
+      <option [ngValue]="1000">1000 lignes</option>
+    </select>
+
+    <button class="apply" (click)="reload()">Appliquer</button>
+  </div>
+
+  @if (loading() && !logs()) {
+    <div class="skel">Chargement…</div>
+  } @else if (logs(); as l) {
+    <div class="meta">
+      <span>{{ l.fileName }}</span>
+      <span class="sep">·</span>
+      <span>{{ l.entries.length }} / {{ l.totalLinesInFile }} lignes affichées</span>
+    </div>
+
+    <div class="log-panel">
+      @for (e of l.entries; track $index) {
+        <div class="log-line" [class]="levelClass(e.level)">
+          <span class="lvl">{{ e.level ?? '···' }}</span>
+          <span class="raw">{{ e.rawLine }}</span>
+        </div>
+      } @empty {
+        <div class="empty-row">Aucune ligne pour ces filtres.</div>
+      }
+    </div>
+  }
+</div>
