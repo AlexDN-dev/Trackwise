@@ -11,6 +11,7 @@ using Trackwise.Application;
 using Trackwise.Domain.Enums;
 using Trackwise.API.Logging;
 using Trackwise.Infrastructure.Persistence;
+using Microsoft.AspNetCore.HttpOverrides;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
 
@@ -104,10 +105,18 @@ try
                 }));
     });
 
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        options.KnownIPNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+
     var app = builder.Build();
     
     Log.Information("Provider IA actif : {Provider}", app.Configuration["Ai:Provider"] ?? "Ollama");
 
+    app.UseForwardedHeaders();
     app.UseMiddleware<SecurityHeadersMiddleware>();
     app.UseSerilogRequestLogging();
     app.UseExceptionHandler();
