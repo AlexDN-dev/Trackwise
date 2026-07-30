@@ -44,7 +44,7 @@
 }
 .burger:hover { background: var(--line2); color: var(--ink); }
 .burger.on { background: var(--accent-soft); color: var(--accent-d); }
-.mk { width: 30px; height: 30px; flex: none; display: block; }
+.mk { width: 30px; height: 30px; flex: none; display: block; object-fit: cover; border-radius: 8px; }
 .wm { font-weight: 800; font-size: 19px; letter-spacing: -.02em; color: var(--ink); }
 
 .nav { display: flex; gap: 3px; margin-left: 6px; }

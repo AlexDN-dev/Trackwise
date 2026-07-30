@@ -34,8 +34,8 @@ button { border: none; background: none; }
   box-shadow: 0 24px 60px -30px rgba(28, 30, 60, .35), 0 2px 6px rgba(28, 30, 60, .04);
 }
 
-.mk { width: 30px; height: 30px; flex: none; display: block; }
-.mk-lg { width: 44px; height: 44px; }
+.mk { width: 30px; height: 30px; flex: none; display: block; object-fit: cover; border-radius: 8px; }
+.mk-lg { width: 44px; height: 44px; border-radius: 10px; }
 .wm { font-weight: 800; font-size: 19px; letter-spacing: -.02em; color: var(--ink); }
 .wm-lg { font-size: 23px; }
 

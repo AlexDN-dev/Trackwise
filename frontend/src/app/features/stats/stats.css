@@ -22,7 +22,7 @@
 }
 .hbrand { display: flex; align-items: center; gap: 9px; text-decoration: none; color: inherit; cursor: pointer; }
 .hbrand:hover .wm { color: var(--accent); }
-.mk { width: 30px; height: 30px; flex: none; display: block; }
+.mk { width: 30px; height: 30px; flex: none; display: block; object-fit: cover; border-radius: 8px; }
 .wm { font-weight: 800; font-size: 19px; letter-spacing: -.02em; color: var(--ink); }
 
 .burger {

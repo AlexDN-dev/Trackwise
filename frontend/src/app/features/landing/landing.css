@@ -59,7 +59,7 @@
   padding: 0 24px;
 }
 .brand { display: flex; align-items: center; gap: 9px; text-decoration: none; }
-.mk { width: 30px; height: 30px; flex: none; display: block; }
+.mk { width: 30px; height: 30px; flex: none; display: block; object-fit: cover; border-radius: 8px; }
 .wm { font-weight: 800; font-size: 19px; letter-spacing: -.02em; color: var(--ink); }
 .nav-links { display: flex; gap: 8px; margin-left: 22px; }
 .nav-a {

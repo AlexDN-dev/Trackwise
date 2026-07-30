@@ -17,6 +17,8 @@ RUN dotnet publish src/Trackwise.API/Trackwise.API.csproj -c Release -o /app/pub
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+# Dossier de logs inscriptible par l'utilisateur non-root 'app' (sinon Serilog ne peut pas écrire)
+RUN mkdir -p /app/logs && chown -R app:app /app/logs
 ENV ASPNETCORE_HTTP_PORTS=8080
 EXPOSE 8080
 USER app
