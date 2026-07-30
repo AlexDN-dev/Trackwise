@@ -69,6 +69,10 @@ public static class DependencyInjection
         
         services.AddScoped<IAdminStatsRepository, AdminStatsRepository>();
         services.AddScoped<IBannedIpRepository, BannedIpRepository>();
+        
+        services.AddScoped<IEmailTokenRepository, EmailTokenRepository>();
+        services.Configure<Email.EmailSettings>(configuration.GetSection(Email.EmailSettings.SectionName));
+        services.AddScoped<IEmailSender, Email.BrevoEmailSender>();
         return services;
 
     }

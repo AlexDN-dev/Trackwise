@@ -194,6 +194,44 @@ namespace Trackwise.Infrastructure.Migrations
                     b.ToTable("Competences");
                 });
 
+            modelBuilder.Entity("Trackwise.Domain.Entities.EmailToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("UsedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EmailTokens");
+                });
+
             modelBuilder.Entity("Trackwise.Domain.Entities.Entreprise", b =>
                 {
                     b.Property<Guid>("Id")
@@ -295,6 +333,12 @@ namespace Trackwise.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("EmailConfirmedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Firstname")
                         .IsRequired()
@@ -416,6 +460,17 @@ namespace Trackwise.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Trackwise.Domain.Entities.EmailToken", b =>
+                {
+                    b.HasOne("Trackwise.Domain.Entities.User", "User")
+                        .WithMany("EmailTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Trackwise.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("Trackwise.Domain.Entities.User", "User")
@@ -454,6 +509,8 @@ namespace Trackwise.Infrastructure.Migrations
             modelBuilder.Entity("Trackwise.Domain.Entities.User", b =>
                 {
                     b.Navigation("Candidatures");
+
+                    b.Navigation("EmailTokens");
 
                     b.Navigation("RefreshTokens");
 

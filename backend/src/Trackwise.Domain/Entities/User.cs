@@ -17,8 +17,12 @@ public class User : BaseEntity
     public int AiUsageCount { get; set; }
     public DateTimeOffset AiUsageResetAt { get; set; }
     public bool IsBanned { get; set; }
+    
+    public bool EmailConfirmed { get; set; }
+    public DateTimeOffset? EmailConfirmedAt { get; set; }
 
     public ICollection<Candidature> Candidatures { get; set; } = new List<Candidature>();
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     public ICollection<UserCompetence> UserCompetences { get; set; } = new List<UserCompetence>();
+    public ICollection<EmailToken> EmailTokens { get; set; } = new List<EmailToken>();
 }

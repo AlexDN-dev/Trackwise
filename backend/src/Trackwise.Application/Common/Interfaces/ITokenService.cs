@@ -7,4 +7,6 @@ public interface ITokenService
     string GenerateAccessToken(User user);
     (string Token, DateTimeOffset ExpiresAt) GenerateRefreshToken();
     string HashRefreshToken(string refreshToken);
+    string GenerateSecureToken();
+    string HashToken(string token);
 }

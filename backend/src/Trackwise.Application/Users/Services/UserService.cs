@@ -10,17 +10,20 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IEmailSender _emailSender;
     private readonly IUnitOfWork _unitOfWork;
 
     public UserService(
         IUserRepository userRepository,
         IRefreshTokenRepository refreshTokenRepository,
         IPasswordHasher passwordHasher,
+        IEmailSender emailSender,
         IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
         _refreshTokenRepository = refreshTokenRepository;
         _passwordHasher = passwordHasher;
+        _emailSender = emailSender;
         _unitOfWork = unitOfWork;
     }
 
@@ -58,6 +61,16 @@ public class UserService : IUserService
             token.RevokedAt = DateTimeOffset.UtcNow;
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _emailSender.SendPasswordChangedAsync(user.Email, user.Firstname, cancellationToken);
+        }
+        catch
+        {
+            // notification best-effort : on ne fait pas échouer le changement de mdp.
+        }
+
         return true;
     }
 

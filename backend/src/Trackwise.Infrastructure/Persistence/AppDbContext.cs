@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<UserCompetence> UserCompetences => Set<UserCompetence>();
     public DbSet<AdminAuditLog> AdminAuditLogs => Set<AdminAuditLog>();
     public DbSet<BannedIp> BannedIps => Set<BannedIp>();
+    public DbSet<EmailToken> EmailTokens => Set<EmailToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
