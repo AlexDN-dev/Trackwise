@@ -1,0 +1,37 @@
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <img src="/logo.png" class="mk mk-lg" alt="Trackwise" />
+      <span class="wm wm-lg">Trackwise</span>
+    </div>
+
+    @switch (state()) {
+      @case ('loading') {
+        <div class="auth-status">
+          <div class="auth-spinner"></div>
+          <h1>Confirmation en cours…</h1>
+          <p>Nous validons ton adresse email, un instant.</p>
+        </div>
+      }
+      @case ('success') {
+        <div class="auth-status">
+          <div class="status-icon ok">
+            <svg width="26" height="26" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" stroke="#0f7a53" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+          </div>
+          <h1>Email confirmé 🎉</h1>
+          <p>Ton compte est activé. Redirection vers ton tableau de candidatures…</p>
+        </div>
+      }
+      @case ('error') {
+        <div class="auth-status">
+          <div class="status-icon err">
+            <svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="#dc4d6f" stroke-width="2.4" stroke-linecap="round" fill="none"></path></svg>
+          </div>
+          <h1>Lien invalide ou expiré</h1>
+          <p>Ce lien de confirmation n’est plus valide. Connecte-toi pour en recevoir un nouveau.</p>
+          <button class="abtn" type="button" routerLink="/auth">Aller à la connexion</button>
+        </div>
+      }
+    }
+  </div>
+</div>

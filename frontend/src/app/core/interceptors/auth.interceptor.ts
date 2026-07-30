@@ -9,7 +9,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   // on ne touche pas aux endpoints publics d'auth
-  const isAuthCall = /\/auth\/(login|register|refresh)/.test(req.url);
+  const isAuthCall =
+    /\/auth\/(login|register|refresh|confirm-email|resend-confirmation|forgot-password|reset-password)/.test(
+      req.url,
+    );
   const token = auth.getAccessToken();
 
   const authReq =

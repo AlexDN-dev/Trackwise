@@ -57,6 +57,25 @@
         }
       </div>
 
+      @if (isLogin() && !emailNotConfirmed()) {
+        <div class="auth-forgot">
+          <a routerLink="/mot-de-passe-oublie">Mot de passe oublié ?</a>
+        </div>
+      }
+
+      @if (infoMessage()) {
+        <p class="auth-info">{{ infoMessage() }}</p>
+      }
+
+      @if (emailNotConfirmed()) {
+        <div class="auth-notice">
+          <p>Ton adresse email n’est pas encore confirmée. Vérifie ta boîte mail (et les spams).</p>
+          <button type="button" class="auth-notice-btn" [disabled]="resending()" (click)="resend()">
+            {{ resending() ? 'Envoi…' : 'Renvoyer l’email de confirmation' }}
+          </button>
+        </div>
+      }
+
       @if (errorMessage()) {
         <p class="auth-error">{{ errorMessage() }}</p>
       }

@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../core/services/auth.service';
@@ -10,7 +11,7 @@ const SYMBOL_RE = /.*[^A-Za-z0-9\s].*/;
 
 @Component({
   selector: 'app-auth',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './auth.html',
   styleUrl: './auth.css',
 })
@@ -23,6 +24,9 @@ export class Auth {
   readonly isLogin = signal(true);
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly infoMessage = signal<string | null>(null);
+  readonly emailNotConfirmed = signal(false);
+  readonly resending = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     firstname: [''],
@@ -73,6 +77,8 @@ export class Auth {
     if (this.isLogin() === login) return;
     this.isLogin.set(login);
     this.errorMessage.set(null);
+    this.infoMessage.set(null);
+    this.emailNotConfirmed.set(false);
 
     const nameValidators = login ? [] : [Validators.required];
     this.form.controls.firstname.setValidators(nameValidators);
@@ -100,15 +106,21 @@ export class Auth {
     }
     this.loading.set(true);
     this.errorMessage.set(null);
+    this.infoMessage.set(null);
+    this.emailNotConfirmed.set(false);
 
     const { email, password, firstname, lastname } = this.form.getRawValue();
 
     if (this.isLogin()) {
       this.auth.login({ email, password }).subscribe({
         next: () => this.router.navigate(['/candidatures']),
-        error: () => {
+        error: (err: HttpErrorResponse) => {
           this.loading.set(false);
-          this.errorMessage.set('Email ou mot de passe incorrect.');
+          if (err.status === 403 && err.error?.code === 'EMAIL_NOT_CONFIRMED') {
+            this.emailNotConfirmed.set(true);
+          } else {
+            this.errorMessage.set('Email ou mot de passe incorrect.');
+          }
         },
       });
     } else {
@@ -117,7 +129,9 @@ export class Auth {
           this.setMode(true);
           this.form.controls.password.reset();
           this.loading.set(false);
-          this.toastService.success('Compte créé. Connecte-toi pour continuer.');
+          this.infoMessage.set(
+            'Compte créé ! Vérifie ta boîte mail et clique sur le lien de confirmation pour activer ton compte.',
+          );
         },
         error: () => {
           this.loading.set(false);
@@ -125,5 +139,24 @@ export class Auth {
         },
       });
     }
+  }
+
+  resend(): void {
+    const email = this.form.controls.email.value;
+    if (!email) {
+      this.errorMessage.set('Renseigne ton adresse email pour recevoir un nouveau lien.');
+      return;
+    }
+    this.resending.set(true);
+    // Réponse volontairement générique (anti-énumération) : même message en cas d'erreur.
+    this.auth.resendConfirmation(email).subscribe({
+      next: () => this.afterResend(),
+      error: () => this.afterResend(),
+    });
+  }
+
+  private afterResend(): void {
+    this.resending.set(false);
+    this.toastService.success('Si un compte non confirmé existe, un nouvel email vient d’être envoyé.');
   }
 }

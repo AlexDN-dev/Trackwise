@@ -12,6 +12,18 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/auth').then((m) => m.Auth),
   },
   {
+    path: 'confirmer-email',
+    loadComponent: () => import('./features/auth/confirm-email').then((m) => m.ConfirmEmail),
+  },
+  {
+    path: 'mot-de-passe-oublie',
+    loadComponent: () => import('./features/auth/forgot-password').then((m) => m.ForgotPassword),
+  },
+  {
+    path: 'reinitialiser-mot-de-passe',
+    loadComponent: () => import('./features/auth/reset-password').then((m) => m.ResetPassword),
+  },
+  {
     path: 'candidatures',
     loadComponent: () => import('./features/candidatures/kanban').then((m) => m.Kanban),
     canActivate: [authGuard],

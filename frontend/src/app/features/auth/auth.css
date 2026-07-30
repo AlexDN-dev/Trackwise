@@ -142,3 +142,71 @@ button { border: none; background: none; }
 .auth-foot { text-align: center; font-size: 13px; color: var(--ink2); margin-top: 20px; }
 .link { color: var(--accent); font-weight: 600; cursor: pointer; }
 .link:hover { color: var(--accent-d); }
+
+/* Lien "mot de passe oublié" */
+.auth-forgot { text-align: right; margin: -6px 0 12px; }
+.auth-forgot a { font-size: 12.5px; font-weight: 600; color: var(--accent); text-decoration: none; }
+.auth-forgot a:hover { color: var(--accent-d); text-decoration: underline; }
+
+/* Bannière d'information (post-inscription, succès) */
+.auth-info {
+  font-size: 12.8px;
+  line-height: 1.5;
+  color: #0f7a53;
+  background: #e8f8f0;
+  border: 1px solid #bfe9d6;
+  border-radius: 11px;
+  padding: 11px 13px;
+  margin: 2px 0 8px;
+  text-align: center;
+}
+
+/* Bloc "email non confirmé" avec bouton de renvoi */
+.auth-notice {
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-radius: 12px;
+  padding: 13px 14px;
+  margin: 2px 0 8px;
+}
+.auth-notice p { font-size: 12.8px; line-height: 1.5; color: var(--ink); margin: 0 0 10px; text-align: center; }
+.auth-notice-btn {
+  width: 100%;
+  height: 40px;
+  background: #fff;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: background .16s, color .16s;
+}
+.auth-notice-btn:hover { background: var(--accent); color: #fff; }
+.auth-notice-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+/* Pages de statut (confirmation email) partagées via ce fichier */
+.auth-status { text-align: center; padding: 8px 0 4px; }
+.auth-status .status-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px auto 18px;
+}
+.status-icon.ok { background: #e8f8f0; }
+.status-icon.err { background: #fdecef; }
+.auth-status h1 { font-size: 20px; font-weight: 700; letter-spacing: -.02em; margin: 0 0 8px; color: var(--ink); }
+.auth-status p { font-size: 13.5px; color: var(--ink2); line-height: 1.6; margin: 0 0 20px; }
+
+.auth-spinner {
+  width: 40px;
+  height: 40px;
+  margin: 12px auto 20px;
+  border: 3px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: auth-spin .8s linear infinite;
+}
+@keyframes auth-spin { to { transform: rotate(360deg); } }

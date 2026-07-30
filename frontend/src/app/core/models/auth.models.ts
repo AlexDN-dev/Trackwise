@@ -13,3 +13,20 @@ export interface LoginRequest {
 export interface AuthResponse {
   accessToken: string,
 }
+
+export interface ConfirmEmailRequest {
+  token: string,
+}
+
+export interface ResendConfirmationRequest {
+  email: string,
+}
+
+export interface ForgotPasswordRequest {
+  email: string,
+}
+
+export interface ResetPasswordRequest {
+  token: string,
+  newPassword: string,
+}

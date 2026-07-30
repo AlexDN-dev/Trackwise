@@ -38,6 +38,29 @@ export class AuthService {
     return this.http.post<void>(`${this.baseUrl}/register`, request);
   }
 
+  confirmEmail(token: string): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.baseUrl}/confirm-email`, { token }, { withCredentials: true })
+      .pipe(
+        tap((res) => {
+          this.accessToken.set(res.accessToken);
+          this.quotaService.refresh().subscribe({ error: () => {} });
+        }),
+      );
+  }
+
+  resendConfirmation(email: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/resend-confirmation`, { email });
+  }
+
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/reset-password`, { token, newPassword });
+  }
+
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.baseUrl}/login`, request, { withCredentials: true })
