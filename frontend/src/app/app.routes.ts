@@ -90,5 +90,25 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'guide',
+    loadComponent: () => import('./features/pages/guide').then((m) => m.Guide),
+  },
+  {
+    path: 'aide',
+    loadComponent: () => import('./features/pages/aide').then((m) => m.Aide),
+  },
+  {
+    path: 'confidentialite',
+    loadComponent: () => import('./features/pages/confidentialite').then((m) => m.Confidentialite),
+  },
+  {
+    path: 'conditions',
+    loadComponent: () => import('./features/pages/conditions').then((m) => m.Conditions),
+  },
+  {
+    path: 'cookies',
+    loadComponent: () => import('./features/pages/cookies').then((m) => m.Cookies),
+  },
   { path: '**', redirectTo: '' },
 ];

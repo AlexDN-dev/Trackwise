@@ -39,17 +39,16 @@ export class ProfileSubscription implements OnInit {
 
   readonly freeFeatures = [
     'Suivi illimité de candidatures',
-    'Analyse IA des offres',
-    'Score de compatibilité',
+    "10 analyses d'offres par l'IA / mois",
+    'Score de compatibilité IA',
     'Statistiques de base',
   ];
 
   readonly premiumFeatures = [
-    'Statistiques avancées & tendances',
-    "Comparateur d'offres",
-    'Suggestions IA personnalisées',
-    'Export PDF & Excel',
-    'Support prioritaire',
+    "500 analyses d'offres par l'IA / mois",
+    'Statistiques avancées : évolution & répartition des scores',
+    'Suivi illimité de candidatures',
+    'Score de compatibilité IA',
   ];
 
   ngOnInit(): void {

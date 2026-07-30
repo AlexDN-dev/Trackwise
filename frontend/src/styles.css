@@ -46,3 +46,34 @@ body {
 
 button { font-family: inherit; cursor: pointer; }
 input, textarea { font-family: inherit; }
+
+/* --- Pages de contenu (guide, aide, légal) --- */
+.doc { min-height: 100vh; background: var(--bg); }
+.doc-top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; max-width: 860px; margin: 0 auto; padding: 20px 24px;
+}
+.doc-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-weight: 700; }
+.doc-brand img { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; }
+.doc-back { text-decoration: none; color: var(--accent); font-weight: 600; font-size: .9rem; white-space: nowrap; }
+.doc-back:hover { text-decoration: underline; }
+.doc-main { max-width: 860px; margin: 0 auto; padding: 4px 24px 80px; }
+.doc-article {
+  background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+  padding: 40px; box-shadow: 0 1px 3px rgba(20, 22, 40, .05);
+}
+.doc-article h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 6px; color: var(--ink); }
+.doc-article h2 { font-size: 1.2rem; margin: 34px 0 10px; color: var(--ink); }
+.doc-article h3 { font-size: 1rem; margin: 22px 0 4px; color: var(--ink); }
+.doc-updated { color: var(--ink2); font-size: .85rem; margin: 0 0 28px; }
+.doc-article p, .doc-article li { line-height: 1.7; color: #33363f; }
+.doc-article ul { padding-left: 22px; margin: 10px 0; }
+.doc-article li { margin: 4px 0; }
+.doc-article a { color: var(--accent); }
+.doc-article strong { color: var(--ink); }
+.doc-lead { font-size: 1.05rem; color: var(--ink2) !important; }
+.doc-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .92rem; }
+.doc-table th, .doc-table td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+.doc-table th { background: var(--accent-soft); color: var(--ink); font-weight: 600; }
+.doc-note { background: var(--accent-soft); border-radius: 12px; padding: 14px 16px; margin: 20px 0; font-size: .92rem; }
+@media (max-width: 640px) { .doc-article { padding: 26px 20px; border-radius: 14px; } }
