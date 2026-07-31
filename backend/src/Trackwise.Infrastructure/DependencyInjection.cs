@@ -72,7 +72,11 @@ public static class DependencyInjection
         
         services.AddScoped<IEmailTokenRepository, EmailTokenRepository>();
         services.Configure<Email.EmailSettings>(configuration.GetSection(Email.EmailSettings.SectionName));
-        services.AddScoped<IEmailSender, Email.BrevoEmailSender>();
+        // Email:Provider = "Dev" → sender de capture (tests locaux), sinon Brevo (prod).
+        if (string.Equals(configuration["Email:Provider"], "Dev", StringComparison.OrdinalIgnoreCase))
+            services.AddScoped<IEmailSender, Email.DevFileEmailSender>();
+        else
+            services.AddScoped<IEmailSender, Email.BrevoEmailSender>();
         return services;
 
     }

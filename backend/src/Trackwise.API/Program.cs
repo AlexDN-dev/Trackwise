@@ -19,6 +19,9 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
+    // Ne pas divulguer "Server: Kestrel" dans les réponses HTTP (réduction de surface d'info).
+    builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
+
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
