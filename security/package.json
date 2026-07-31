@@ -1,0 +1,13 @@
+{
+  "name": "trackwise-security",
+  "private": true,
+  "type": "module",
+  "description": "Suite de pentest applicatif (Playwright) — tests d'autorisation et de sécurité contre l'API locale.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^22.0.0"
+  }
+}
