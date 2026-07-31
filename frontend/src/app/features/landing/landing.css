@@ -39,6 +39,7 @@
   color: var(--accent-d);
 }
 .btn-sm { height: 40px; padding: 0 16px; font-size: 13.5px; }
+.cta-short { display: none; }
 
 /* ---------- NAV ---------- */
 .nav {
@@ -613,4 +614,16 @@
   .h1 { font-size: 34px; }
   .lead { font-size: 16.5px; }
   .foot-in { grid-template-columns: 1fr; }
+
+  /* Header compact : label court + espacements réduits pour éviter le débordement */
+  .nav-in { padding: 0 16px; gap: 8px; }
+  .nav-r { gap: 10px; }
+  .btn-sm { padding: 0 14px; font-size: 13px; }
+  .nav-cta .cta-full { display: none; }
+  .nav-cta .cta-short { display: inline; }
+}
+
+@media (max-width: 380px) {
+  /* Très petits écrans : "Se connecter" est redondant (le CTA mène aussi à /auth) */
+  .nav-signin { display: none; }
 }

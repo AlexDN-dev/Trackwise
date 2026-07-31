@@ -7,25 +7,14 @@
     [title]="isPremium() ? 'Analyses IA illimitées' : q.used + ' / ' + q.limit + ' analyses IA utilisées ce mois'"
   >
     <span class="icon" aria-hidden="true">
-      @if (isPremium()) {
-        <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
-          <path
-            d="M4 10c0-2 1.5-3.5 3.5-3.5S10 8 10 10s-1.5 3.5-3.5 3.5S4 12 4 10Zm12 0c0-2-1.5-3.5-3.5-3.5S10 8 10 10s1.5 3.5 3.5 3.5S16 12 16 10Z"
-            stroke="currentColor"
-            stroke-width="1.6"
-            stroke-linecap="round"
-          />
-        </svg>
-      } @else {
-        <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
-          <path
-            d="M10 2v3M10 15v3M2 10h3M15 10h3M4.9 4.9l2.1 2.1M13 13l2.1 2.1M4.9 15.1L7 13M13 7l2.1-2.1"
-            stroke="currentColor"
-            stroke-width="1.6"
-            stroke-linecap="round"
-          />
-        </svg>
-      }
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+        <path
+          d="M10 2v3M10 15v3M2 10h3M15 10h3M4.9 4.9l2.1 2.1M13 13l2.1 2.1M4.9 15.1L7 13M13 7l2.1-2.1"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+        />
+      </svg>
     </span>
 
     <span class="label">
