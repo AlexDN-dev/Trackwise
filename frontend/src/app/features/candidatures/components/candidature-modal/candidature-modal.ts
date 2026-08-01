@@ -1,7 +1,9 @@
 import {
+  AfterViewInit,
   Component,
   computed,
   ElementRef,
+  HostListener,
   inject,
   input,
   OnInit,
@@ -25,13 +27,27 @@ import { ToastService } from '../../../../core/services/toast.service';
   templateUrl: './candidature-modal.html',
   styleUrl: './candidature-modal.css',
 })
-export class CandidatureModal implements OnInit {
+export class CandidatureModal implements OnInit, AfterViewInit {
   private readonly fb = inject(FormBuilder);
   private readonly candidatureService = inject(CandidatureService);
   private readonly aiService = inject(AiAnalysisService);
   private readonly competenceService = inject(CompetenceService);
   private readonly toastService = inject(ToastService);
   private readonly skillInputRef = viewChild<ElementRef<HTMLInputElement>>('skillInput');
+  private readonly titleInputRef = viewChild<ElementRef<HTMLInputElement>>('titleInput');
+  private readonly aiTextInputRef = viewChild<ElementRef<HTMLTextAreaElement>>('aiTextRef');
+
+  @HostListener('document:keydown.escape')
+  onEsc(): void {
+    this.close.emit();
+  }
+
+  ngAfterViewInit(): void {
+    queueMicrotask(() => {
+      if (this.mode() === 'manual') this.titleInputRef()?.nativeElement.focus();
+      else this.aiTextInputRef()?.nativeElement.focus();
+    });
+  }
 
   readonly prefill = input<AnalysisResult | null>(null);
   readonly isPrefill = computed(() => this.prefill() !== null);
@@ -127,6 +143,10 @@ export class CandidatureModal implements OnInit {
   setMode(mode: 'manual' | 'ai'): void {
     this.mode.set(mode);
     this.errorMessage.set(null);
+    queueMicrotask(() => {
+      if (mode === 'manual') this.titleInputRef()?.nativeElement.focus();
+      else this.aiTextInputRef()?.nativeElement.focus();
+    });
   }
 
   onOverlayClick(event: MouseEvent): void {

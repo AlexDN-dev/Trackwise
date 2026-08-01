@@ -21,7 +21,6 @@
     <nav class="nav" [class.nav-open]="mobileMenuOpen()">
       <button type="button" class="navlink on" (click)="closeMobileMenu()">Tableau</button>
       <button type="button" class="navlink" routerLink="/statistiques" (click)="closeMobileMenu()">Statistiques</button>
-      <button type="button" class="navlink" (click)="closeMobileMenu()">Documents</button>
       <button type="button" class="navlink" routerLink="/profil" (click)="closeMobileMenu()">Paramètres</button>
       @if (isAdmin()) {
         <button type="button" class="navlink admin" routerLink="/admin" (click)="closeMobileMenu()">Admin</button>
@@ -36,7 +35,8 @@
         <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
       </svg>
       <input
-        placeholder="Rechercher…"
+        #searchInput
+        placeholder="Rechercher…   /"
         [value]="searchQuery()"
         (input)="searchQuery.set($any($event.target).value)"
         (keydown.escape)="clearSearch(); $any($event.target).blur()"
@@ -120,7 +120,13 @@
           <span class="dot"></span>
           <span class="kcol-nm">{{ col.label }}</span>
           <span class="kcol-ct">{{ col.cards.length }}</span>
-          <button type="button" class="kadd" title="Ajouter" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            class="kadd"
+            [attr.aria-label]="'Ajouter dans ' + col.label"
+            [title]="'Ajouter dans ' + col.label"
+            (click)="$event.stopPropagation(); openAddModal(col.status)"
+          >
             <svg width="13" height="13" viewBox="0 0 14 14">
               <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path>
             </svg>

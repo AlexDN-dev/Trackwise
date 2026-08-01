@@ -20,6 +20,9 @@
         }
       </div>
       <div class="toast-msg">{{ t.message }}</div>
+      @if (t.action; as a) {
+        <button type="button" class="toast-action" (click)="runAction(t.id)">{{ a.label }}</button>
+      }
       <button type="button" class="toast-x" (click)="dismiss(t.id)" aria-label="Fermer">
         <svg width="12" height="12" viewBox="0 0 12 12">
           <path d="M2 2l8 8M10 2L2 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>

@@ -49,7 +49,7 @@
         <form [formGroup]="form" (ngSubmit)="submit()">
           <div class="mfield">
             <label class="mlabel" for="c-title">Intitulé du poste</label>
-            <input id="c-title" class="minput" formControlName="title" placeholder="Développeur .NET / C#" />
+            <input #titleInput id="c-title" class="minput" formControlName="title" placeholder="Développeur .NET / C#" />
           </div>
 
           <div class="mgrid">

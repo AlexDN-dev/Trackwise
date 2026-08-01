@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, HostListener, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -18,5 +18,10 @@ export class ConfirmDialog {
 
   onOverlayClick(event: MouseEvent): void {
     if (event.target === event.currentTarget) this.cancelled.emit();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEsc(): void {
+    this.cancelled.emit();
   }
 }

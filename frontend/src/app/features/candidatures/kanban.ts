@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CdkDrag, CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
 import { AuthService } from '../../core/services/auth.service';
@@ -51,6 +51,22 @@ export class Kanban {
   readonly aiPrefill = signal<AnalysisResult | null>(null);
   readonly searchQuery = signal('');
   readonly mobileMenuOpen = signal(false);
+  readonly initialStatus = signal<CandidatureStatus | null>(null);
+
+  private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
+  @HostListener('document:keydown', ['$event'])
+  onDocKey(event: KeyboardEvent): void {
+    if (event.key !== '/') return;
+    const t = event.target as HTMLElement | null;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (this.modalOpen() || this.pendingDelete()) return;
+    const el = this.searchInput()?.nativeElement;
+    if (!el) return;
+    event.preventDefault();
+    el.focus();
+    el.select();
+  }
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen.update((v) => !v);
@@ -138,7 +154,7 @@ export class Kanban {
     if (target !== undefined) this.persistStatus(card, target);
   }
 
-  private persistStatus(card: CandidatureResponse, newStatus: CandidatureStatus): void {
+  private persistStatus(card: CandidatureResponse, newStatus: CandidatureStatus, silent = false): void {
     const oldStatus = card.status;
 
     this.candidatures.update((list) =>
@@ -157,16 +173,26 @@ export class Kanban {
         entrepriseId: card.entrepriseId,
       })
       .subscribe({
-        error: () =>
+        next: () => {
+          if (silent || oldStatus === newStatus) return;
+          const label = COLUMNS.find((c) => c.status === newStatus)?.label ?? '';
+          this.toastService.info(`Déplacée vers « ${label} ».`, {
+            action: { label: 'Annuler', run: () => this.persistStatus({ ...card, status: newStatus }, oldStatus, true) },
+          });
+        },
+        error: () => {
           this.candidatures.update((list) =>
             list.map((c) => (c.id === card.id ? { ...c, status: oldStatus } : c)),
-          ),
+          );
+          this.toastService.error('Impossible de déplacer la candidature.');
+        },
       });
   }
 
-  openAddModal(): void {
+  openAddModal(status?: CandidatureStatus): void {
     this.editingCandidature.set(null);
     this.aiPrefill.set(null);
+    this.initialStatus.set(status ?? null);
     this.modalOpen.set(true);
   }
 
@@ -179,13 +205,18 @@ export class Kanban {
     this.modalOpen.set(false);
     this.editingCandidature.set(null);
     this.aiPrefill.set(null);
+    this.initialStatus.set(null);
   }
 
   onCandidatureSaved(saved: CandidatureResponse): void {
     const isEdit = this.editingCandidature() !== null;
+    const target = this.initialStatus();
     this.candidatures.update((list) =>
       isEdit ? list.map((c) => (c.id === saved.id ? saved : c)) : [...list, saved],
     );
+    if (!isEdit && target !== null && target !== saved.status) {
+      this.persistStatus(saved, target, true);
+    }
     this.closeModal();
   }
 

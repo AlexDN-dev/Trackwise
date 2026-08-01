@@ -14,4 +14,8 @@ export class Toaster {
   dismiss(id: number): void {
     this.service.dismiss(id);
   }
+
+  runAction(id: number): void {
+    this.service.runAction(id);
+  }
 }

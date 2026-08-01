@@ -50,7 +50,7 @@
   border-radius: 20px;
   letter-spacing: -.01em;
 }
-.sc-none { color: var(--ink2); background: var(--line2); }
+.sc-none { color: var(--ink3); background: var(--line2); opacity: .55; }
 .sc-hi { color: #0f8556; background: #e8f8f0; }
 .sc-mid { color: var(--accent-d); background: var(--accent-soft); }
 .sc-lo { color: var(--ink2); background: var(--line2); }
